@@ -9,8 +9,8 @@
 
 #include "aes.h"
 
-extern char aes4all_actual_dir[128];
-extern char neo4all_image_file[64];
+extern char aes4all_actual_dir[1024];
+extern char neo4all_image_file[1024];
 
 unsigned char aes4all_pen_usage[0x10000];
 unsigned *aes4all_prefetch_bufffer=NULL;

@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <time.h>
 
-char neo4all_image_file[64] = { 0, 0, 0, 0};
+char neo4all_image_file[1024] = { 0, 0, 0, 0};
 static int cdr_modes[]={0, 8, 12, 24};
 static int cdr_frames[]={2048, 2352, 2056, 2332, 2336, 2448};
 static int cdr_mode=0;

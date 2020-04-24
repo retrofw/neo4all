@@ -16,8 +16,8 @@ void *aes4all_mmap;
 #include "aes.h"
 
 
-extern char aes4all_actual_dir[128];
-char neo4all_image_file[64];
+extern char aes4all_actual_dir[1024];
+char neo4all_image_file[1024];
 char *aes4all_filename=(char *)&neo4all_image_file[0];
 
 
