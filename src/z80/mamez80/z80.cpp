@@ -3230,7 +3230,7 @@ OP(fd,ff) { illegal_1(); op_ff();									} /* DB   FD		  */
 
 OP(illegal,2)
 {
-  /* --- MP ---  
+  /* --- MP ---
       logerror("Z80 #%d ill. opcode $ed $%02x\n",
       cpu_getactivecpu(), cpu_readop((_PCD-1)&0xffff));
   */

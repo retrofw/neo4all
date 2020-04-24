@@ -56,7 +56,7 @@ static inline void draw_controlMenu(int c)
 			switch(menuControl_bt[i&3])
 			{
 			case SDLK_e:
-			case SDLK_LCTRL: write_text_inv(21,y,"||||||"); break; 
+			case SDLK_LCTRL: write_text_inv(21,y,"||||||"); break;
 			case SDLK_q:
 			case SDLK_LALT:  write_text_inv(25,y,"||||||"); break;
 			case SDLK_c:
@@ -75,7 +75,7 @@ static inline void draw_controlMenu(int c)
 			switch(menuControl_bt[i&3])
 			{
 			case SDLK_e:
-			case SDLK_LCTRL: write_text(21,y,"||||||"); break; 
+			case SDLK_LCTRL: write_text(21,y,"||||||"); break;
 			case SDLK_q:
 			case SDLK_LALT:  write_text(25,y,"||||||"); break;
 			case SDLK_c:
@@ -89,8 +89,8 @@ static inline void draw_controlMenu(int c)
 			write_text(34,y,text_str_buty);
 		}
 	}
-			
-			
+
+
 
 	write_text(3,20,text_str_separator);
 
@@ -263,8 +263,8 @@ int run_menuControl()
 		unraise_menuControl();
 		switch(menuControl_case)
 		{
-			case CONTROL_MENU_CASE_EXIT:	
-			case CONTROL_MENU_CASE_CANCEL:	
+			case CONTROL_MENU_CASE_EXIT:
+			case CONTROL_MENU_CASE_CANCEL:
 				menuControl_case=1;
 				break;
 			default:

@@ -125,7 +125,7 @@ static int load_part(FILE *f, unsigned *size, unsigned *init)
 	fread((void *)init,1,4,f);
 	fread((void *)size,1,4,f);
 	fread((void *)&chk,1,4,f);
-/*	
+/*
 	if (size)
 	{
 		fseek(f,*init,SEEK_SET);
@@ -146,7 +146,7 @@ static int load_aes(char *filename)
 		return -1;
 
 	head=(char *)calloc(16,1);
-	fread((void *)head,1,6,f); 
+	fread((void *)head,1,6,f);
 
 	if (strcmp("NEOAES",head))
 	{

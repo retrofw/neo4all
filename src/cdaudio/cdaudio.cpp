@@ -76,7 +76,6 @@ int cdda_get_disk_info(void)
     return 0;
 }
 
-
 //----------------------------------------------------------------------------
 #ifdef USE_THREAD_CDDA
 static int real_cdda_play(int track)
@@ -89,7 +88,7 @@ int cdda_play(int track)
 #endif
 #ifdef ENABLE_CDDA
     if(cdda_disabled) return 1;
-    
+
     if(cdda_playing && cdda_current_track==track) return 1;
 
     if( CD_INDRIVE(SDL_CDStatus(cdrom)) ) {
@@ -102,9 +101,9 @@ int cdda_play(int track)
         init_autoframeskip();
 #endif
     	return 1;
-    } 
+    }
     else
-    { 
+    {
         cdda_disabled = 1;
         return 1;
     }

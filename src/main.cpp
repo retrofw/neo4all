@@ -344,7 +344,7 @@ int neo4all_init_memory(void)
 		console_puts("failed !");
 		return 0;
 	}
-	
+
 	neogeo_rom_memory = (char *)calloc(1, 0x80000);
 	if (neogeo_rom_memory==NULL) {
 		console_puts("failed !");
@@ -404,7 +404,7 @@ int neo4all_load_bios(void)
 
 	char *fixtmp=(char *)calloc(1, 65536);
 	memcpy(fixtmp,&neogeo_rom_memory[458752],65536);
-	
+
 	fix_conv((unsigned char *)fixtmp,(unsigned char *)&neogeo_rom_memory[458752],65536,(unsigned char *)rom_fix_usage);
 	/*swab(neogeo_rom_memory, neogeo_rom_memory, 131072);*/
 	free(fixtmp);
@@ -449,8 +449,6 @@ int neo4all_load_bios(void)
 	return 1;
 }
 
-
-
 static void profiler_init(void)
 {
 #ifdef PROFILER_NEO4ALL
@@ -465,7 +463,6 @@ static void profiler_init(void)
 #endif
 
 }
-
 
 //----------------------------------------------------------------------------
 int	main(int argc, char* argv[])
@@ -490,13 +487,13 @@ int	main(int argc, char* argv[])
 #endif
 	// Initialise SDL
 #ifdef DINGUX
-	if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) { 
+	if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
 #else
-	if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_CDROM|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK)==-1)) { 
+	if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_CDROM|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK)==-1)) {
 #endif
-            console_printf("Could not initialize SDL: %s.\n", SDL_GetError());
-           return -1;
-        }
+		console_printf("Could not initialize SDL: %s.\n", SDL_GetError());
+		return -1;
+    }
 #ifndef DREAMCAST
 	// Register exit procedure
 	atexit(neogeo_shutdown);
@@ -544,7 +541,6 @@ int	main(int argc, char* argv[])
 	if (!neo4all_load_bios())
 		return -4;
 
-
 #ifdef Z80_EMULATED
 	_z80_init();
 #endif
@@ -559,7 +555,7 @@ int	main(int argc, char* argv[])
 	cdda_current_drive=neogeo_cdrom_current_drive;
 	cdda_init();
 #endif
-	
+
 	// Initialize everything
 	neogeo_init();
 	profiler_init();
@@ -654,10 +650,10 @@ int	neogeo_hreset(void)
 	if (strcmp((const char *)config_game_name, "TEST PROGRAM USA") == 0)
 	{
 		strcpy((char *)config_game_name, "SAMURAI SPIRITS RPG");
-		
+
 		memcpy(neogeo_prg_memory + 0x132000, patch_data, PATCH_DATA_LEN);
 		swab(neogeo_prg_memory + 0x132000, neogeo_prg_memory + 0x132000, 112);
-	
+
 	}
 
 #if !defined(DREAMCAST) && !defined(DINGUX)
@@ -673,7 +669,7 @@ int	neogeo_hreset(void)
 	_68k_set_register(_68K_REG_SR,0x2700);
 	_68k_set_register(_68K_REG_A7,0x10F300);
 //	_68k_set_register(_68K_REG_ASP,0x10F400);
-	
+
 	m68k_write_memory_32(0x10F6EE, m68k_read_memory_32(0x68L)); // $68 *must* be copied at 10F6EE
 
 	if (m68k_read_memory_8(0x107)&0x7E)
@@ -702,7 +698,7 @@ int	neogeo_hreset(void)
 
 	aes4all_nvram_lock=0;
 	_68k_reset();
- 
+
 #endif
 	memcpy(neogeo_game_vector,neogeo_prg_memory,0x80);
 #ifdef Z80_EMULATED
@@ -728,7 +724,7 @@ int	neogeo_hreset(void)
 	num_resets++;
 	neogeo_emulating=1;
 	return 0;
-}	
+}
 
 //----------------------------------------------------------------------------
 void	neogeo_reset(void)
@@ -807,9 +803,9 @@ void	neogeo_shutdown(void)
 // AQUI PARA LIBERAR MEMORIA CON AES
 
 #endif
-	
+
 	SDL_Quit();
-	
+
 	return;
 }
 
@@ -819,7 +815,7 @@ void	neogeo_exception(void)
 	console_printf("NEOGEO: Exception Trapped at %08x !\n", previouspc);
 	SDL_Delay(1000);
 	exit(0);
-}	
+}
 
 //----------------------------------------------------------------------------
 /*
@@ -922,7 +918,7 @@ void	neogeo_run(void)
 #if defined(AES) && defined(DREAMCAST)
 	unsigned now_mmu_frame, current_mmu_frame=mmu_handle_get_frame();
 #endif
-	
+
 	neo4all_prof_start(NEO4ALL_PROFILER_MAIN);
 	// Main loop
 	console_puts("Lets go ...");
@@ -998,15 +994,15 @@ void	neogeo_run(void)
 
 		// update pd4990a
 		pd4990a_addretrace();
-		
-		// check the watchdog 
+
+		// check the watchdog
 		if (watchdog_counter > 0) {
 		    if (--watchdog_counter == 0) {
 			//logerror("reset caused by the watchdog\n");
 			neogeo_reset();
 		    }
 		}
-		
+
 		memcard_update();
 
 #ifdef DEBUG_FRAMESKIP
@@ -1132,7 +1128,7 @@ void	neogeo_run(void)
 	}
 	// Stop CDDA
 	cdda_stop();
-		
+
 	return;
 }
 
@@ -1143,22 +1139,22 @@ void	neogeo_prio_switch(void)
 {
 	if (_68k_get_register(_68K_REG_D7) == 0xFFFF)
 		return;
-	
-	if (_68k_get_register(_68K_REG_D7) == 9 && 
+
+	if (_68k_get_register(_68K_REG_D7) == 9 &&
 	    _68k_get_register(_68K_REG_A3) == 0x10DED9 &&
 		(_68k_get_register(_68K_REG_A2) == 0x1081d0 ||
 		(_68k_get_register(_68K_REG_A2)&0xFFF000) == 0x102000)) {
 		neogeo_prio_mode = 0;
 		return;
 	}
-	
-	if (_68k_get_register(_68K_REG_D7) == 8 && 
-	    _68k_get_register(_68K_REG_A3) == 0x10DEC7 && 
+
+	if (_68k_get_register(_68K_REG_D7) == 8 &&
+	    _68k_get_register(_68K_REG_A3) == 0x10DEC7 &&
 		_68k_get_register(_68K_REG_A2) == 0x102900) {
 		neogeo_prio_mode = 0;
 		return;
 	}
-	
+
 	if (_68k_get_register(_68K_REG_A7) == 0x10F29C)
 	{
 		if ((_68k_get_register(_68K_REG_D4)&0x4010) == 0x4010)
@@ -1166,7 +1162,7 @@ void	neogeo_prio_switch(void)
 			neogeo_prio_mode = 0;
 			return;
 		}
-		
+
 		neogeo_prio_mode = 1;
 	}
 	else
@@ -1203,7 +1199,7 @@ void neogeo_cdda_check(void)
 {
 #ifdef ENABLE_CDDA
 	int		Offset;
-	
+
 	Offset = m68k_read_memory_32(0x10F6EA);
 	if (Offset < 0xE00000)	// Invalid addr
 		return;
@@ -1224,7 +1220,7 @@ void neogeo_cdda_check(void)
 void neogeo_cdda_control(void)
 {
 #ifdef ENABLE_CDDA
-	neogeo_do_cdda( (_68k_get_register(_68K_REG_D0)>>8)&0xFF, 
+	neogeo_do_cdda( (_68k_get_register(_68K_REG_D0)>>8)&0xFF,
 	                 _68k_get_register(_68K_REG_D0)&0xFF );
 #endif
 }

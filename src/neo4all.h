@@ -3,7 +3,7 @@
  **
  * 2003 Fosters
  */
- 
+
 #ifndef NEOCD_H
 #define NEOCD_H
 
@@ -26,7 +26,7 @@
 #ifndef AES
 #define NEO4ALL_Z80_NORMAL_CYCLES	 66666
 #else
-#define NEO4ALL_Z80_NORMAL_CYCLES	 73333 
+#define NEO4ALL_Z80_NORMAL_CYCLES	 73333
 #endif
 #define NEO4ALL_68K_NORMAL_CYCLES	200000
 
@@ -65,7 +65,7 @@
 
 /*-- Version, date & time to display on startup ----------------------------*/
 #define VERSION1 "NEO4ALL based on NeoCD/SDL 0.3.1 and GnGeo 0.6.5"
-#define VERSION2 "Compiled on: "__DATE__" "__TIME__
+#define VERSION2 "Compiled on: " __DATE__ " " __TIME__
 
 /*-- functions -------------------------------------------------------------*/
 

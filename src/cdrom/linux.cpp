@@ -8,7 +8,7 @@
 
 /**
  * getMountPoint (int drive, char *mountpoint)
- * 
+ *
  * gets the mount point for numbered SDL CD drive.
  * mount path copied into mountpoint - buffer must be large enough to receive path.
  *
@@ -19,7 +19,7 @@
  *         0 if error
  *
  */
-int getMountPoint(int drive, char *mountpoint) 
+int getMountPoint(int drive, char *mountpoint)
 {
 // #ifdef DEBUG_MEMORY
 #if 1

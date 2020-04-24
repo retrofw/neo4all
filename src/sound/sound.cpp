@@ -1,6 +1,6 @@
 /*  gngeo a neogeo emulator
  *  Copyright (C) 2001 Peponas Mathieu
- * 
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  
+
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
@@ -96,28 +96,27 @@ int init_sdl_audio(void)
 #ifdef MENU_MUSIC
     unsigned i;
     Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16, 2, NB_SAMPLES);
-    for(i=0;i<NUM_SAMPLES;i++)
+    for(i=0;i<NUM_SAMPLES;i++) {
 	    sample[i]=Mix_LoadWAV(sample_filename[i]);
+    }
 #else
     SDL_AudioSpec desired;
 
     desired.freq = SAMPLE_RATE;
     desired.samples = NB_SAMPLES;
-    
+
 #ifdef WORDS_BIGENDIAN
     desired.format = AUDIO_S16MSB;
-#else	
     desired.format = AUDIO_S16;
-#endif	
     desired.channels = 2;
     desired.callback = update_sdl_stream;
     desired.userdata = NULL;
     SDL_OpenAudio(&desired, NULL);
 #endif
     SDL_PauseAudio(1);
-    
+
     sound_reset();
-#endif    
+#endif
     return 1;
 }
 

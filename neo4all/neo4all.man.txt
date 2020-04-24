@@ -1,0 +1,69 @@
+1. INTRODUCTION
+ ------------
+
+NEO4ALL emulates home CD-ROM NeoGeo system
+for Dingoo under Dingoo Linux (Dingux). It started life as NeoGeo home emulator for the Dreamcast console
+and has now been ported to the Dingoo. Additonal details about this project can be found
+at http://chui.dcemu.co.uk/neo4all.html
+
+
+2. INSTALLATION
+ ------------
+
+Unzip the zip file, and copy the content of the
+directory game to your SD card.
+
+Also needs a NeoGeo CD-ROM Bios image file named as 'neocd.bin' at same place than 'neo4all.dge' binary.
+
+
+3. USAGE
+ ------------
+
+Choose NeoGeo CD-ROM disk image (ISOs) at filemanager. Supports ISO/TOC, BIN/CUE, CCD, MDS and SUB image types. But not supports CDDA tracks for now.
+
+
+4. DEFAULT CONTROLS
+ ------------
+
+Dingoo: NeoGeo
+A: A button
+B: B button
+Y: C button
+X: D button
+L: Pause
+R: Brings up the NEO4ALL menu
+SELECT + START: Brings up the NEO4ALL menu
+SELECT + UP: Brightness up.
+SELECT + DOWN: Brightness down.
+SELECT + LEFT: Volume down.
+SELECT + RIGHT: Volume up.
+SELECT + A: Increase Dingoo overclocking
+SELECT + B: Decrease Dingoo overclocking
+
+
+5. MENU OPTIONS
+ ------------
+
+Region: Allows you to choose game region.
+
+Frameskip: You can adjust frame skipping with this option. Frameskip 1 or Auto is reccomended.
+
+Sound: Turns sound output On/Off.
+
+CDDA: Turns CDDA playback On/Off. (Always OFF for now).
+
+Filter: Graphic filtering. Bilinear filtering produces a smoother image, but could decrease emulator speed dramatically.
+
+68K CLK (CPU Settings): Intended to take control of 68000 CPU clock. Overclocking could fix some game slowdowns. Normal CLK is recommended.
+
+Z80 CLK (CPU Settings): Intented to adjust Z80 CPU clock. Underclocking can result in a general speed increase, but could broke sound output. Under CLK is recommended.
+
+Sync SFX (CPU Settings): Sets the sound system synchronized with the main 68000 CPU. Required by some games to get sound output. Off by default.
+
+Edit Controls: Allows you to configure buttons at your choice.
+
+Select Game: Choose the NeoGeo CD-ROM image disk.
+
+Run: Runs the NeoGeo game.
+
+Exit: Exits from emulator.

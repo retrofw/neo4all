@@ -18,13 +18,10 @@
 #include "videogl.h"
 #endif
 
-
 //-- Defines -----------------------------------------------------------------
 #define VIDEO_TEXT		0
 #define VIDEO_NORMAL	1
 #define	VIDEO_SCANLINES	2
-
-
 
 //-- Global Variables --------------------------------------------------------
 unsigned	video_palette_selected=0;
@@ -94,10 +91,8 @@ void	snapshot_init(void);
 void	video_save_snapshot(void);
 void	video_setup(void);
 
-
 void video_reset(void)
 {
-
 	video_precalc_lut();
 
 	memset(video_palette_ng, 0, 8192*2);
@@ -140,7 +135,7 @@ int	video_init(void)
 	}
 
 	video_reset();
-	
+
 	if (video_set_mode(VIDEO_NORMAL)==0)
 		return 0;
 
@@ -183,13 +178,11 @@ int	video_init(void)
 //----------------------------------------------------------------------------
 void	video_shutdown(void)
 {
-
 	//if (video_buffer != NULL) SDL_FreeSurface( video_buffer );
 	//if (game_title != NULL)   SDL_FreeSurface( game_title );
-
 	//free(video_vidram);
-	
 }
+
 #ifdef DREAMCAST
 #include <SDL_dreamcast.h>
 #endif
@@ -229,7 +222,6 @@ int	video_set_mode(int mode)
 
 	return 1;
 }
-
 
 //----------------------------------------------------------------------------
 void	video_precalc_lut(void)
@@ -312,4 +304,3 @@ void snapshot_init(void) { }
 void video_save_snapshot(void) { }
 void video_fullscreen_toggle(void) { }
 #endif
-

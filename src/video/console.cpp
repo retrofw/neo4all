@@ -59,11 +59,11 @@ void console_text_pos(int x, int y, char * str)
 {
   int i, c;
   SDL_Rect src, dest;
-  
+
   for (i = 0; i < strlen(str); i++)
     {
       c = -1;
-      
+
       if (str[i] >= '0' && str[i] <= '9')
 	c = str[i] - '0';
       else if (str[i] >= 'A' && str[i] <= 'Z')
@@ -86,34 +86,34 @@ void console_text_pos(int x, int y, char * str)
 	c = 66;
       else if (str[i] == ':')
 	c = 67;
-      
+
       if (c >= 0)
 	{
 	  src.x = c * 8;
 	  src.y = 0;
 	  src.w = 8;
 	  src.h = 8;
-	  
+
 	  dest.x = x + (i * 8);
 	  dest.y = y;
 	  dest.w = 8;
 	  dest.h = 8;
-	  
+
 	  SDL_BlitSurface(text_image, &src,
 			  screen, &dest);
 	}
       else if (c == -2 || c == -3)
 	{
 	  dest.x = x + (i * 8);
-	  
+
 	  if (c == -2)
 	    dest.y = y  + 7;
 	  else if (c == -3)
 	    dest.y = y  + 3;
-	  
+
 	  dest.w = 8;
 	  dest.h = 1;
-	  
+
 	  SDL_FillRect(screen, &dest,
 		       SDL_MapRGB(screen->format, 0xCC, 0xCC, 0xCC));
 	}
@@ -124,11 +124,11 @@ void console_text(int x, int y, char * str)
 {
   int i, c;
   SDL_Rect src, dest;
-  
+
   for (i = 0; i < strlen(str); i++)
     {
       c = -1;
-      
+
       if (str[i] >= '0' && str[i] <= '9')
 	c = str[i] - '0';
       else if (str[i] >= 'A' && str[i] <= 'Z')
@@ -151,34 +151,34 @@ void console_text(int x, int y, char * str)
 	c = 66;
       else if (str[i] == ':')
 	c = 67;
-      
+
       if (c >= 0)
 	{
 	  src.x = c * 8;
 	  src.y = 0;
 	  src.w = 8;
 	  src.h = 8;
-	  
+
 	  dest.x = (x + i) * 8;
 	  dest.y = (y * 12) + 2;
 	  dest.w = 8;
 	  dest.h = 8;
-	  
+
 	  SDL_BlitSurface(text_image, &src,
 			  screen, &dest);
 	}
       else if (c == -2 || c == -3)
 	{
 	  dest.x = (x + i) * 8;
-	  
+
 	  if (c == -2)
 	    dest.y = y * 12 /*10*/ + 7;
 	  else if (c == -3)
 	    dest.y = y * 12 /*10*/ + 3;
-	  
+
 	  dest.w = 8;
 	  dest.h = 1;
-	  
+
 	  SDL_FillRect(screen, &dest,
 		       SDL_MapRGB(screen->format, 0xCC, 0xCC, 0xCC));
 	}
@@ -191,8 +191,8 @@ void console_text(int x, int y, char * str)
 void console_text_inv(int x, int y, char * str)
 {
   SDL_Rect dest;
-  
-  
+
+
   dest.x = (x * 8) -2 ;
   dest.y = (y * 12) /*10*/ - 2;
   dest.w = (strlen(str) * 8) + 4;
@@ -217,7 +217,7 @@ void console_text_centered(int y, char * str)
 void console_text_num(int x, int y, int v)
 {
   char str[24];
-  
+
   sprintf(str, "%d", v);
   console_text(x, y, str);
 }
@@ -232,7 +232,7 @@ void console_text_num_inv(int x, int y, int v)
 		l++;
   	else
 		break;
-  	
+
   dest.x = (x * 8) -2 ;
   dest.y = (y * 12) /*10*/ - 2;
   dest.w = (l * 8) + 4;
@@ -387,7 +387,7 @@ void console_wait(void)
     int salida=0;
     SDL_Event event;
 
-    while(SDL_PollEvent(&event)) 
+    while(SDL_PollEvent(&event))
 	    SDL_Delay(10);
 
     while(!salida)
@@ -415,5 +415,3 @@ void console_pag(void)
 {
 	console_y=(screen->h/background[0]->h);
 }
-
-

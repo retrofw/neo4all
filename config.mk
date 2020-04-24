@@ -247,7 +247,7 @@ OBJS =	\
 	src/input/input.o \
 	src/main.o \
 	src/icon.o \
-	src/memcard.o 
+	src/memcard.o
 
 ifdef AES
 OBJS+= \
@@ -264,7 +264,7 @@ else
 OBJS+= \
 	src/cdrom/cdrom.o \
 	src/cdaudio/cdaudio.o \
-	$(CDROM_OBJ) 
+	$(CDROM_OBJ)
 
 endif
 
@@ -282,7 +282,7 @@ endif
 
 ifdef PD4990A
 OBJS+= \
-	src/pd4990a.o 
+	src/pd4990a.o
 endif
 
 ifdef MENU
@@ -293,7 +293,7 @@ OBJS+= \
 	src/menu/sfont.o \
 	src/menu/menu_cpu.o \
 	src/menu/menu_ctl.o \
-	src/menu/menu_main.o 
+	src/menu/menu_main.o
 ifdef AES
 OBJS+= \
 	src/menu/menu_load.o
@@ -322,7 +322,7 @@ OBJS+= \
 	src/sound/ay8910.o \
 	src/sound/fm.o \
 	src/sound/ymdeltat.o \
-	src/sound/timer.o 
+	src/sound/timer.o
 endif
 
 ifdef VIDEOGL
@@ -349,12 +349,12 @@ ifdef Z80_EMULATED
 		endif
 	else
 	ifdef MAMEZ80_CORE
-		Z80_OBJS = src/z80/mamez80/z80.o 
+		Z80_OBJS = src/z80/mamez80/z80.o
 	else
 		ifdef CZ80_CORE
 			Z80_OBJS = src/z80/cz80/cz80.o
 		else
-			Z80_OBJS = src/z80/mz80/z80.o 
+			Z80_OBJS = src/z80/mz80/z80.o
 		endif
 	endif
 	endif
@@ -372,7 +372,7 @@ $(FAME_OBJ): $(FAME_SRC)
 endif
 endif
 OBJS_68K= $(FAME_OBJ)
-MEMORY_OBJ= src/memory/fame/memory.o 
+MEMORY_OBJ= src/memory/fame/memory.o
 
 else
 ifdef MUSASHI_CORE

@@ -1,9 +1,9 @@
 /*  gngeo a neogeo emulator
  *  Copyright (C) 2001 Peponas Mathieu
- * 
- *  This program is free software; you can redistribute it and/or modify  
- *  it under the terms of the GNU General Public License as published by   
- *  the Free Software Foundation; either version 2 of the License, or    
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -13,7 +13,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -26,8 +26,6 @@
 #include "conf.h"
 #include "pbar.h"
 #include "driver.h"
-
-
 
 #ifdef I386_ASM
 /* global declaration for video_i386.asm */
@@ -74,7 +72,7 @@ char ddaxskip[16][16] =
 static __inline__ Uint16 alpha_blend(Uint16 dest,Uint16 src,Uint8 a)
 {
     static Uint8 dr,dg,db,sr,sg,sb;
-  
+
     dr=((dest&0xF800)>>11)<<3;
     dg=((dest&0x7E0)>>5)<<2;
     db=((dest&0x1F))<<3;
@@ -82,11 +80,11 @@ static __inline__ Uint16 alpha_blend(Uint16 dest,Uint16 src,Uint8 a)
     sr=((src&0xF800)>>11)<<3;
     sg=((src&0x7E0)>>5)<<2;
     sb=((src&0x1F))<<3;
-  
+
     dr = (((sr-dr)*(a))>>8)+dr;
     dg = (((sg-dg)*(a))>>8)+dg;
     db = (((sb-db)*(a))>>8)+db;
-  
+
     return ((dr>>3)<<11)|((dg>>2)<<5)|(db>>3);
 }
 #define BLEND16_50(a,b) ((((a)&0xf7de)>>1)+(((b)&0xf7de)>>1))
@@ -103,12 +101,12 @@ SDL_Rect screen_rect={0,0,304,224};
 */
 
 
-void convert_all_char(Uint8 *Ptr, int Taille, 
+void convert_all_char(Uint8 *Ptr, int Taille,
 		      Uint8 *usage_ptr)
 {
     int		i,j;
     unsigned char	usage;
-    
+
     Uint8 *Src;
     Uint8 *sav_src;
 
@@ -163,8 +161,8 @@ void convert_mgd2_tiles(unsigned char *buf,int len)
 	mgd2_tile_pos=0;
     }
     if (len == 2) {
-	
-	
+
+
 	return;
     }
 

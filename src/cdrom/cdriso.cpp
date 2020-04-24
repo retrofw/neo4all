@@ -331,7 +331,7 @@ static void startCDDA(unsigned int offset) {
 	}
 
 	if (!offset) return;
-	
+
 	cddaHandle = fopen(IsoFile, "rb");
 	if (cddaHandle == NULL) {
 		return;
@@ -816,7 +816,7 @@ long CDR_open(void) {
 
 			time[0] = itob(0); time[1] = itob(2); time[2] = itob(0x10);
 			READTRACK();
-			dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156]; 
+			dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156];
 #ifndef DREAMCAST
 			unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
 #else
@@ -1031,17 +1031,17 @@ static void mmssdd( char *b, char *p )
  {
 	int m, s, d;
 	int block = (b[0]&0xff) | ((b[1]&0xff)<<8) | ((b[2]&0xff)<<16) | (b[3]<<24);
-	
+
 	block += 150;
 	m = block / 4500;			// minuten
 	block = block - m * 4500;	// minuten rest
 	s = block / 75;				// sekunden
 	d = block - s * 75;			// sekunden rest
-	
+
 	m = ( ( m / 10 ) << 4 ) | m % 10;
 	s = ( ( s / 10 ) << 4 ) | s % 10;
-	d = ( ( d / 10 ) << 4 ) | d % 10;	
-	
+	d = ( ( d / 10 ) << 4 ) | d % 10;
+
 	p[0] = m;
 	p[1] = s;
 	p[2] = d;
@@ -1112,7 +1112,7 @@ int CDR_LoadCdromFile(const char *filename, unsigned char *addr, unsigned len, u
 	READTRACK();
 
 	// skip head and sub, and go to the root directory record
-	dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156]; 
+	dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156];
 
 #ifndef DREAMCAST
 	unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
@@ -1167,7 +1167,7 @@ void *CDR_fopen(const char *filename, const char *filemode) {
 	READTRACK_p();
 
 	// skip head and sub, and go to the root directory record
-	dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156]; 
+	dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156];
 
 #ifndef DREAMCAST
 	unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
@@ -1194,7 +1194,7 @@ void *CDR_fopen(const char *filename, const char *filemode) {
 }
 
 void CDR_fclose(void *fp) {
-	if (((unsigned)fp >= (unsigned)&cdr_files[0])&& 
+	if (((unsigned)fp >= (unsigned)&cdr_files[0])&&
 	    ((unsigned)fp < (unsigned)&cdr_files[(sizeof(cdr_files)/sizeof(cdr_file))])) {
 		cdr_file *cf=(cdr_file *)fp;
 		cf->size=0;
@@ -1203,7 +1203,7 @@ void CDR_fclose(void *fp) {
 
 unsigned CDR_fread(void *addr_b, unsigned size_f, unsigned count_f, void *fp) {
 	if (!addr_b || !fp || !size_f || !count_f) return 0;
-	if (((unsigned)fp >= (unsigned)&cdr_files[0])&& 
+	if (((unsigned)fp >= (unsigned)&cdr_files[0])&&
 	    ((unsigned)fp < (unsigned)&cdr_files[(sizeof(cdr_files)/sizeof(cdr_file))])) {
 		unsigned char *addr=(unsigned char *)addr_b;
 		unsigned len=size_f*count_f;
@@ -1247,7 +1247,7 @@ unsigned CDR_fread(void *addr_b, unsigned size_f, unsigned count_f, void *fp) {
 }
 
 int CDR_feof(void *fp){
-	if (((unsigned)fp >= (unsigned)&cdr_files[0])&& 
+	if (((unsigned)fp >= (unsigned)&cdr_files[0])&&
 	    ((unsigned)fp < (unsigned)&cdr_files[(sizeof(cdr_files)/sizeof(cdr_file))])) {
 		cdr_file *cf=(cdr_file *)fp;
 		if (cf->size)
@@ -1258,7 +1258,7 @@ int CDR_feof(void *fp){
 
 char *CDR_fgets(char *addr_b, int size_b, void *fp){
 	unsigned i, readed, pos;
-	if (((unsigned)fp >= (unsigned)&cdr_files[0])&& 
+	if (((unsigned)fp >= (unsigned)&cdr_files[0])&&
 	    ((unsigned)fp < (unsigned)&cdr_files[(sizeof(cdr_files)/sizeof(cdr_file))])) {
 		cdr_file *cf=(cdr_file *)fp;
 		pos=cf->pos;

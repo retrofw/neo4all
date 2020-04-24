@@ -152,8 +152,8 @@ static __inline__ void video_draw_screen_first(void)
   int    a;
 
 //printf("draw_screen bgcolor=0x%X\n",video_paletteram_pc[4095]);
-  for (a=0; a<224; a++) 
-  	sq_set16(video_line_ptr[a], video_paletteram_pc[4095], 320*2);  
+  for (a=0; a<224; a++)
+  	sq_set16(video_line_ptr[a], video_paletteram_pc[4095], 320*2);
 #else
   if (video_palette_dirty)
   {
@@ -171,97 +171,97 @@ static __inline__ void video_draw_screen_first(void)
 
 void  print_video_checksum(void);
 
-//---------------------------------------------------------------------------- 
-void video_draw_screen1() 
+//----------------------------------------------------------------------------
+void video_draw_screen1()
 {
-   int         sx =0,sy =0,oy =0,my =0,zx = 1, rzy = 1; 
-   int         offs,i,count,y; 
-   int         tileno,tileatr,t1,t2,t3; 
-   char         fullmode=0; 
-   int         ddax=0,dday=0,rzx=15,yskip=0; 
+   int         sx =0,sy =0,oy =0,my =0,zx = 1, rzy = 1;
+   int         offs,i,count,y;
+   int         tileno,tileatr,t1,t2,t3;
+   char         fullmode=0;
+   int         ddax=0,dday=0,rzx=15,yskip=0;
 
    if (!neo4all_skip_next_frame)
    	video_draw_screen_first();
 
 //printf("neogeo_frame_counter_fc=%i, neogeo_frame_counter_speed=%i\n",neogeo_frame_counter_fc,neogeo_frame_counter_speed);
 
-   if (neogeo_frame_counter_fc >= neogeo_frame_counter_speed) { 
-      neogeo_frame_counter++; 
+   if (neogeo_frame_counter_fc >= neogeo_frame_counter_speed) {
+      neogeo_frame_counter++;
       neogeo_frame_counter_fc=0; //3;
-   } 
+   }
 
 //printf("neogeo_frame_counter=%i\n",neogeo_frame_counter);
 //print_video_checksum();
 
-   neogeo_frame_counter_fc++; 
-   for (count=0;count<0x300;count+=2) { 
-      t3 = *((unsigned short *)( &video_vidram[0x10000 + count] )); 
-      t1 = *((unsigned short *)( &video_vidram[0x10400 + count] )); 
-      t2 = *((unsigned short *)( &video_vidram[0x10800 + count] )); 
+   neogeo_frame_counter_fc++;
+   for (count=0;count<0x300;count+=2) {
+      t3 = *((unsigned short *)( &video_vidram[0x10000 + count] ));
+      t1 = *((unsigned short *)( &video_vidram[0x10400 + count] ));
+      t2 = *((unsigned short *)( &video_vidram[0x10800 + count] ));
 //printf("%i, t1=0x%X, t2=0x%X, t3=0x%X\n",count,t1,t2,t3);
 
-      // If this bit is set this new column is placed next to last one 
-      if (t1 & 0x40) { 
+      // If this bit is set this new column is placed next to last one
+      if (t1 & 0x40) {
 #ifndef _AES_
-         sx += (rzx + 1); 
-         if ( sx >= 0x1F0 ) 
+         sx += (rzx + 1);
+         if ( sx >= 0x1F0 )
             sx -= 0x200;
 #else
 	 sx += rzx;
 #endif
 
-         // Get new zoom for this column 
-         zx = (t3 >> 8)&0x0F; 
+         // Get new zoom for this column
+         zx = (t3 >> 8)&0x0F;
 
-         sy = oy; 
-      } else {   // nope it is a new block 
-         // Sprite scaling 
-         zx = (t3 >> 8)&0x0F; 
+         sy = oy;
+      } else {   // nope it is a new block
+         // Sprite scaling
+         zx = (t3 >> 8)&0x0F;
 
-         rzy = t3 & 0xff; 
+         rzy = t3 & 0xff;
 #ifdef _AES_
 	 if (!rzy) continue;
 #endif
 
          sx = (t2 >> 7);
 #ifndef _AES_
-         if ( sx >= 0x1F0 ) 
-            sx -= 0x200; 
+         if ( sx >= 0x1F0 )
+            sx -= 0x200;
 #endif
 
-         // Number of tiles in this strip 
-         my = t1 & 0x3f; 
-         if (my == 0x20) 
-            fullmode = 1; 
-         else if (my >= 0x21) 
-            fullmode = 2;   // most games use 0x21, but 
-         else 
-            fullmode = 0;   // Alpha Mission II uses 0x3f 
+         // Number of tiles in this strip
+         my = t1 & 0x3f;
+         if (my == 0x20)
+            fullmode = 1;
+         else if (my >= 0x21)
+            fullmode = 2;   // most games use 0x21, but
+         else
+            fullmode = 0;   // Alpha Mission II uses 0x3f
 
 #ifndef _AES_
-         sy = 0x1F0 - (t1 >> 7); 
-         if (sy > 0x100) sy -= 0x200; 
+         sy = 0x1F0 - (t1 >> 7);
+         if (sy > 0x100) sy -= 0x200;
 #else
 	 sy = 0x200 - (t1 >> 7); /* sprite bank position */
 	 if (sy > 0x110) sy -= 0x200;
 #endif
-          
-         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff)) 
-         { 
+
+         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff))
+         {
 #ifndef _AES_
-            while (sy < -16) sy += 2 * (rzy + 1); 
+            while (sy < -16) sy += 2 * (rzy + 1);
 #else
 	    while (sy < 0) sy += ((rzy + 1)<<1);
 #endif
-         } 
-         oy = sy; 
+         }
+         oy = sy;
 
 #ifndef _AES_
          if(my==0x21)
-		 my=0x20; 
+		 my=0x20;
          else
-		 if(rzy!=0xff && my!=0) 
-            		my=((my*16*256)/(rzy+1) + 15)/16; 
+		 if(rzy!=0xff && my!=0)
+            		my=((my*16*256)/(rzy+1) + 15)/16;
 #else
 	 if (rzy < 0xff && my < 0x10 && my){
 		 my = my*255/rzy;
@@ -269,17 +269,17 @@ void video_draw_screen1()
 	 }
 #endif
 
-         if(my>0x20) my=0x20; 
+         if(my>0x20) my=0x20;
 
-         ddax=0;   // setup x zoom 
-      } 
+         ddax=0;   // setup x zoom
+      }
 
 #ifndef _AES_
-      rzx = zx; 
+      rzx = zx;
 
-      // No point doing anything if tile strip is 0 
-      if ((my==0)||(sx>311)) 
-         continue; 
+      // No point doing anything if tile strip is 0
+      if ((my==0)||(sx>311))
+         continue;
 #else
       if (my==0) continue;
       if(zx!=15) rzx=zx+1;
@@ -288,21 +288,21 @@ void video_draw_screen1()
       if(sx>=320) continue;
 #endif
 
-      // Setup y zoom 
-      if(rzy==255) 
-         yskip=16; 
-      else 
-         dday=0;   // =256; NS990105 mslug fix 
+      // Setup y zoom
+      if(rzy==255)
+         yskip=16;
+      else
+         dday=0;   // =256; NS990105 mslug fix
 
-      offs = count<<6; 
+      offs = count<<6;
 
 //printf("offs=%i\n",offs);
-      // my holds the number of tiles in each vertical multisprite block 
-      for (y=0; y < my ;y++) { 
-         tileno  = *((unsigned short *)(&video_vidram[offs])); 
+      // my holds the number of tiles in each vertical multisprite block
+      for (y=0; y < my ;y++) {
+         tileno  = *((unsigned short *)(&video_vidram[offs]));
 //printf("tileno=%i, offs=%i\n",tileno,offs);
-         offs+=2; 
-         tileatr = *((unsigned short *)(&video_vidram[offs])); 
+         offs+=2;
+         tileatr = *((unsigned short *)(&video_vidram[offs]));
          offs+=2;
 
 #ifdef AES
@@ -319,52 +319,52 @@ void video_draw_screen1()
 	 if (tileno>aes4all_memory_nb_of_tiles)
 	    continue;
 #else
-         if (tileatr&0x8) 
-            tileno = (tileno&~7)|(neogeo_frame_counter&7); 
-         else if (tileatr&0x4) 
-            tileno = (tileno&~3)|(neogeo_frame_counter&3); 
-              
-         if (tileno>0x7FFF) 
-            continue; 
+         if (tileatr&0x8)
+            tileno = (tileno&~7)|(neogeo_frame_counter&7);
+         else if (tileatr&0x4)
+            tileno = (tileno&~3)|(neogeo_frame_counter&3);
+
+         if (tileno>0x7FFF)
+            continue;
 #endif
 
 
-         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff)) 
-         { 
-            if (sy >= 248) sy -= ((rzy + 1)<<1); 
-         } 
-         else if (fullmode == 1) 
-         { 
-            if (y == 0x10) sy -= ((rzy + 1)<<1); 
-         } 
-         else if (sy > 0x110) sy -= 0x200; 
+         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff))
+         {
+            if (sy >= 248) sy -= ((rzy + 1)<<1);
+         }
+         else if (fullmode == 1)
+         {
+            if (y == 0x10) sy -= ((rzy + 1)<<1);
+         }
+         else if (sy > 0x110) sy -= 0x200;
 
-         if(rzy!=255) 
-         { 
-            yskip=0; 
+         if(rzy!=255)
+         {
+            yskip=0;
 #ifndef USE_VIDEO_GL
-            video_shrinky[0]=0; 
+            video_shrinky[0]=0;
 #endif
-            for(i=0;i<16;i++) 
-            { 
+            for(i=0;i<16;i++)
+            {
 #ifndef USE_VIDEO_GL
-               video_shrinky[i+1]=0; 
+               video_shrinky[i+1]=0;
 #endif
-               dday-=rzy+1; 
-               if(dday<=0) 
-               { 
-                  dday+=256; 
-                  yskip++; 
+               dday-=rzy+1;
+               if(dday<=0)
+               {
+                  dday+=256;
+                  yskip++;
 #ifndef USE_VIDEO_GL
-                  video_shrinky[yskip]++; 
+                  video_shrinky[yskip]++;
 #endif
-               } 
+               }
 #ifndef USE_VIDEO_GL
-               else 
-                  video_shrinky[yskip]++; 
+               else
+                  video_shrinky[yskip]++;
 #endif
-            } 
-         } 
+            }
+         }
 
 	 if (!neo4all_skip_next_frame)
 #ifdef _AES_
@@ -374,345 +374,345 @@ void video_draw_screen1()
 //{
 		if (sx >= -16 && sx+15 < 336 && sy>=0 && sy+15 <256)
 #else
-         	if (((tileatr>>8)||(tileno!=0))&&(sy<224)) 
+         	if (((tileatr>>8)||(tileno!=0))&&(sy<224))
 #endif
          	{
 //printf("PINTA %i, %i, %i, %i, %i, %i, %i, %i,\n",tileno,tileatr >> 8,tileatr & 0x01,tileatr & 0x02,sx,sy,rzx,yskip);
-         		video_draw_spr( 
+         		video_draw_spr(
                			tileno,
-				tileatr >> 8, 
-               			tileatr & 0x01,tileatr & 0x02, 
-               			sx,sy,rzx,yskip); 
+				tileatr >> 8,
+               			tileatr & 0x01,tileatr & 0x02,
+               			sx,sy,rzx,yskip);
          	}
 //else printf("%i desechado\n",tileno);
 //}else printf("TILE INVISIBLE %i\n",tileno);
 //}
 
-         sy +=yskip; 
-      }  // for y 
-   }  // for count 
+         sy +=yskip;
+      }  // for y
+   }  // for count
 
-    
+
    if (!neo4all_skip_next_frame)
    {
-   	video_draw_fix(); 
+   	video_draw_fix();
    	blitter();
    }
-} 
+}
 
 
 #ifndef AES
-//---------------------------------------------------------------------------- 
-void video_draw_screen2() 
-{ 
-   static int      pass1_start; 
-   int         sx =0,sy =0,oy =0,my =0,zx = 1, rzy = 1; 
-   int         offs,i,count,y; 
-   int         tileno,tileatr,t1,t2,t3; 
-   char         fullmode=0; 
-   int         ddax=0,dday=0,rzx=15,yskip=0; 
+//----------------------------------------------------------------------------
+void video_draw_screen2()
+{
+   static int      pass1_start;
+   int         sx =0,sy =0,oy =0,my =0,zx = 1, rzy = 1;
+   int         offs,i,count,y;
+   int         tileno,tileatr,t1,t2,t3;
+   char         fullmode=0;
+   int         ddax=0,dday=0,rzx=15,yskip=0;
 
    if (!neo4all_skip_next_frame)
    	video_draw_screen_first();
- 
-   if (neogeo_frame_counter_fc >= neogeo_frame_counter_speed) { 
-      neogeo_frame_counter++; 
+
+   if (neogeo_frame_counter_fc >= neogeo_frame_counter_speed) {
+      neogeo_frame_counter++;
       neogeo_frame_counter_fc=0; //3;
-   } 
-   neogeo_frame_counter_fc++; 
-   t1 = *((unsigned short *)( &video_vidram[0x10400 + 4] )); 
+   }
+   neogeo_frame_counter_fc++;
+   t1 = *((unsigned short *)( &video_vidram[0x10400 + 4] ));
 
-   if ((t1 & 0x40) == 0) 
-   { 
-      for (pass1_start=6;pass1_start<0x300;pass1_start+=2) 
-      { 
-         t1 = *((unsigned short *)( &video_vidram[0x10400 + pass1_start] )); 
+   if ((t1 & 0x40) == 0)
+   {
+      for (pass1_start=6;pass1_start<0x300;pass1_start+=2)
+      {
+         t1 = *((unsigned short *)( &video_vidram[0x10400 + pass1_start] ));
 
-         if ((t1 & 0x40) == 0) 
-            break; 
-      } 
-        
-      if (pass1_start == 6) 
-         pass1_start = 0; 
-   } 
-   else 
-      pass1_start = 0;    
+         if ((t1 & 0x40) == 0)
+            break;
+      }
 
-   for (count=pass1_start;count<0x300;count+=2) { 
-      t3 = *((unsigned short *)( &video_vidram[0x10000 + count] )); 
-      t1 = *((unsigned short *)( &video_vidram[0x10400 + count] )); 
-      t2 = *((unsigned short *)( &video_vidram[0x10800 + count] )); 
+      if (pass1_start == 6)
+         pass1_start = 0;
+   }
+   else
+      pass1_start = 0;
 
-      // If this bit is set this new column is placed next to last one 
-      if (t1 & 0x40) { 
-         sx += (rzx + 1); 
-         if ( sx >= 0x1F0 ) 
-            sx -= 0x200; 
+   for (count=pass1_start;count<0x300;count+=2) {
+      t3 = *((unsigned short *)( &video_vidram[0x10000 + count] ));
+      t1 = *((unsigned short *)( &video_vidram[0x10400 + count] ));
+      t2 = *((unsigned short *)( &video_vidram[0x10800 + count] ));
 
-         // Get new zoom for this column 
-         zx = (t3 >> 8)&0x0F; 
+      // If this bit is set this new column is placed next to last one
+      if (t1 & 0x40) {
+         sx += (rzx + 1);
+         if ( sx >= 0x1F0 )
+            sx -= 0x200;
 
-         sy = oy; 
-      } else {   // nope it is a new block 
-         // Sprite scaling 
-         zx = (t3 >> 8)&0x0F; 
+         // Get new zoom for this column
+         zx = (t3 >> 8)&0x0F;
 
-         rzy = t3 & 0xff; 
+         sy = oy;
+      } else {   // nope it is a new block
+         // Sprite scaling
+         zx = (t3 >> 8)&0x0F;
 
-         sx = (t2 >> 7); 
-         if ( sx >= 0x1F0 ) 
-            sx -= 0x200; 
+         rzy = t3 & 0xff;
 
-         // Number of tiles in this strip 
-         my = t1 & 0x3f; 
-         if (my == 0x20) 
-            fullmode = 1; 
-         else if (my >= 0x21) 
-            fullmode = 2;   // most games use 0x21, but 
-         else 
-            fullmode = 0;   // Alpha Mission II uses 0x3f 
+         sx = (t2 >> 7);
+         if ( sx >= 0x1F0 )
+            sx -= 0x200;
 
-         sy = 0x1F0 - (t1 >> 7); 
-         if (sy > 0x100) sy -= 0x200; 
-          
-         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff)) 
-         { 
-            while (sy < -16) sy += 2 * (rzy + 1); 
-         } 
-         oy = sy; 
+         // Number of tiles in this strip
+         my = t1 & 0x3f;
+         if (my == 0x20)
+            fullmode = 1;
+         else if (my >= 0x21)
+            fullmode = 2;   // most games use 0x21, but
+         else
+            fullmode = 0;   // Alpha Mission II uses 0x3f
+
+         sy = 0x1F0 - (t1 >> 7);
+         if (sy > 0x100) sy -= 0x200;
+
+         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff))
+         {
+            while (sy < -16) sy += 2 * (rzy + 1);
+         }
+         oy = sy;
 
          if(my==0x21)
-		 my=0x20; 
+		 my=0x20;
          else
-		 if(rzy!=0xff && my!=0) 
-            		my=((my*16*256)/(rzy+1) + 15)/16; 
+		 if(rzy!=0xff && my!=0)
+            		my=((my*16*256)/(rzy+1) + 15)/16;
 
-         if(my>0x20) my=0x20; 
+         if(my>0x20) my=0x20;
 
-         ddax=0;   // setup x zoom 
-      } 
+         ddax=0;   // setup x zoom
+      }
 
-      rzx = zx; 
+      rzx = zx;
 
-      // No point doing anything if tile strip is 0 
-      if ((my==0)||(sx>311)) 
-         continue; 
+      // No point doing anything if tile strip is 0
+      if ((my==0)||(sx>311))
+         continue;
 
-      // Setup y zoom 
-      if(rzy==255) 
-         yskip=16; 
-      else 
-         dday=0;   // =256; NS990105 mslug fix 
+      // Setup y zoom
+      if(rzy==255)
+         yskip=16;
+      else
+         dday=0;   // =256; NS990105 mslug fix
 
-      offs = count<<6; 
+      offs = count<<6;
 
-      // my holds the number of tiles in each vertical multisprite block 
-      for (y=0; y < my ;y++) { 
-         tileno  = *((unsigned short *)(&video_vidram[offs])); 
-         offs+=2; 
-         tileatr = *((unsigned short *)(&video_vidram[offs])); 
-         offs+=2; 
+      // my holds the number of tiles in each vertical multisprite block
+      for (y=0; y < my ;y++) {
+         tileno  = *((unsigned short *)(&video_vidram[offs]));
+         offs+=2;
+         tileatr = *((unsigned short *)(&video_vidram[offs]));
+         offs+=2;
 
-         if (tileatr&0x8) 
-            tileno = (tileno&~7)|(neogeo_frame_counter&7); 
-         else if (tileatr&0x4) 
-            tileno = (tileno&~3)|(neogeo_frame_counter&3); 
-              
-         if (tileno>0x7FFF) 
-            continue; 
+         if (tileatr&0x8)
+            tileno = (tileno&~7)|(neogeo_frame_counter&7);
+         else if (tileatr&0x4)
+            tileno = (tileno&~3)|(neogeo_frame_counter&3);
+
+         if (tileno>0x7FFF)
+            continue;
 
 
-         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff)) 
-         { 
-            if (sy >= 224) sy -= ((rzy + 1)<<1); 
-         } 
-         else if (fullmode == 1) 
-         { 
-            if (y == 0x10) sy -= ((rzy + 1)<<1); 
-         } 
-         else if (sy > 0x100) sy -= 0x200; 
+         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff))
+         {
+            if (sy >= 224) sy -= ((rzy + 1)<<1);
+         }
+         else if (fullmode == 1)
+         {
+            if (y == 0x10) sy -= ((rzy + 1)<<1);
+         }
+         else if (sy > 0x100) sy -= 0x200;
 
-         if(rzy!=255) 
-         { 
-            yskip=0; 
+         if(rzy!=255)
+         {
+            yskip=0;
 #ifndef USE_VIDEO_GL
-            video_shrinky[0]=0; 
+            video_shrinky[0]=0;
 #endif
-            for(i=0;i<16;i++) 
-            { 
+            for(i=0;i<16;i++)
+            {
 #ifndef USE_VIDEO_GL
-               video_shrinky[i+1]=0; 
+               video_shrinky[i+1]=0;
 #endif
-               dday-=rzy+1; 
-               if(dday<=0) 
-               { 
-                  dday+=256; 
-                  yskip++; 
+               dday-=rzy+1;
+               if(dday<=0)
+               {
+                  dday+=256;
+                  yskip++;
 #ifndef USE_VIDEO_GL
-                  video_shrinky[yskip]++; 
+                  video_shrinky[yskip]++;
 #endif
-               } 
+               }
 #ifndef USE_VIDEO_GL
-               else 
-                  video_shrinky[yskip]++; 
+               else
+                  video_shrinky[yskip]++;
 #endif
-            } 
-         } 
+            }
+         }
 
     	 if (!neo4all_skip_next_frame)
-         	if (((tileatr>>8)||(tileno!=0))&&(sy<224)) 
-         	{ 
-         		video_draw_spr( 
-               			tileno, 
-               			tileatr >> 8, 
-               			tileatr & 0x01,tileatr & 0x02, 
-               			sx,sy,rzx,yskip); 
-         	} 
+         	if (((tileatr>>8)||(tileno!=0))&&(sy<224))
+         	{
+         		video_draw_spr(
+               			tileno,
+               			tileatr >> 8,
+               			tileatr & 0x01,tileatr & 0x02,
+               			sx,sy,rzx,yskip);
+         	}
 
-         sy +=yskip; 
-      }  // for y 
-   }  // for count 
+         sy +=yskip;
+      }  // for y
+   }  // for count
 
-   for (count=0;count<pass1_start;count+=2) { 
-      t3 = *((unsigned short *)( &video_vidram[0x10000 + count] )); 
-      t1 = *((unsigned short *)( &video_vidram[0x10400 + count] )); 
-      t2 = *((unsigned short *)( &video_vidram[0x10800 + count] )); 
+   for (count=0;count<pass1_start;count+=2) {
+      t3 = *((unsigned short *)( &video_vidram[0x10000 + count] ));
+      t1 = *((unsigned short *)( &video_vidram[0x10400 + count] ));
+      t2 = *((unsigned short *)( &video_vidram[0x10800 + count] ));
 
-      // If this bit is set this new column is placed next to last one 
-      if (t1 & 0x40) { 
-         sx += (rzx + 1); 
-         if ( sx >= 0x1F0 ) 
-            sx -= 0x200; 
+      // If this bit is set this new column is placed next to last one
+      if (t1 & 0x40) {
+         sx += (rzx + 1);
+         if ( sx >= 0x1F0 )
+            sx -= 0x200;
 
-         // Get new zoom for this column 
-         zx = (t3 >> 8)&0x0F; 
+         // Get new zoom for this column
+         zx = (t3 >> 8)&0x0F;
 
-         sy = oy; 
-      } else {   // nope it is a new block 
-         // Sprite scaling 
-         zx = (t3 >> 8)&0x0F; 
+         sy = oy;
+      } else {   // nope it is a new block
+         // Sprite scaling
+         zx = (t3 >> 8)&0x0F;
 
-         rzy = t3 & 0xff; 
+         rzy = t3 & 0xff;
 
-         sx = (t2 >> 7); 
-         if ( sx >= 0x1F0 ) 
-            sx -= 0x200; 
+         sx = (t2 >> 7);
+         if ( sx >= 0x1F0 )
+            sx -= 0x200;
 
-         // Number of tiles in this strip 
-         my = t1 & 0x3f; 
-         if (my == 0x20) 
-            fullmode = 1; 
-         else if (my >= 0x21) 
-            fullmode = 2;   // most games use 0x21, but 
-         else 
-            fullmode = 0;   // Alpha Mission II uses 0x3f 
+         // Number of tiles in this strip
+         my = t1 & 0x3f;
+         if (my == 0x20)
+            fullmode = 1;
+         else if (my >= 0x21)
+            fullmode = 2;   // most games use 0x21, but
+         else
+            fullmode = 0;   // Alpha Mission II uses 0x3f
 
-         sy = 0x1F0 - (t1 >> 7); 
-         if (sy > 0x100) sy -= 0x200; 
-          
-         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff)) 
-         { 
+         sy = 0x1F0 - (t1 >> 7);
+         if (sy > 0x100) sy -= 0x200;
+
+         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff))
+         {
 	    while (sy < 0) sy += ((rzy + 1)<<1);
-         } 
-         oy = sy; 
+         }
+         oy = sy;
 
 	 if (rzy < 0xff && my < 0x10 && my){
 		 my = my*255/rzy;
 		 if (my > 0x10) my = 0x10;
 	 }
 
-         if(my>0x20) my=0x20; 
+         if(my>0x20) my=0x20;
 
-         ddax=0;   // setup x zoom 
-      } 
+         ddax=0;   // setup x zoom
+      }
 
-      rzx = zx; 
+      rzx = zx;
 
-      // No point doing anything if tile strip is 0 
-      if ((my==0)||(sx>311)) 
-         continue; 
+      // No point doing anything if tile strip is 0
+      if ((my==0)||(sx>311))
+         continue;
 
-      // Setup y zoom 
-      if(rzy==255) 
-         yskip=16; 
-      else 
-         dday=0;   // =256; NS990105 mslug fix 
+      // Setup y zoom
+      if(rzy==255)
+         yskip=16;
+      else
+         dday=0;   // =256; NS990105 mslug fix
 
-      offs = count<<6; 
+      offs = count<<6;
 
-      // my holds the number of tiles in each vertical multisprite block 
-      for (y=0; y < my ;y++) { 
-         tileno  = *((unsigned short *)(&video_vidram[offs])); 
-         offs+=2; 
-         tileatr = *((unsigned short *)(&video_vidram[offs])); 
-         offs+=2; 
+      // my holds the number of tiles in each vertical multisprite block
+      for (y=0; y < my ;y++) {
+         tileno  = *((unsigned short *)(&video_vidram[offs]));
+         offs+=2;
+         tileatr = *((unsigned short *)(&video_vidram[offs]));
+         offs+=2;
 
-         if (tileatr&0x8) 
-            tileno = (tileno&~7)|(neogeo_frame_counter&7); 
-         else if (tileatr&0x4) 
-            tileno = (tileno&~3)|(neogeo_frame_counter&3); 
-              
-         if (tileno>0x7FFF) 
-            continue; 
+         if (tileatr&0x8)
+            tileno = (tileno&~7)|(neogeo_frame_counter&7);
+         else if (tileatr&0x4)
+            tileno = (tileno&~3)|(neogeo_frame_counter&3);
+
+         if (tileno>0x7FFF)
+            continue;
 
 
-         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff)) 
-         { 
-            if (sy >= 248) sy -= ((rzy + 1)<<1); 
-         } 
-         else if (fullmode == 1) 
-         { 
-            if (y == 0x10) sy -= ((rzy + 1)<<1); 
-         } 
-         else if (sy > 0x110) sy -= 0x200; 
+         if (fullmode == 2 || (fullmode == 1 && rzy == 0xff))
+         {
+            if (sy >= 248) sy -= ((rzy + 1)<<1);
+         }
+         else if (fullmode == 1)
+         {
+            if (y == 0x10) sy -= ((rzy + 1)<<1);
+         }
+         else if (sy > 0x110) sy -= 0x200;
 
-         if(rzy!=255) 
-         { 
-            yskip=0; 
+         if(rzy!=255)
+         {
+            yskip=0;
 #ifndef USE_VIDEO_GL
-            video_shrinky[0]=0; 
+            video_shrinky[0]=0;
 #endif
-            for(i=0;i<16;i++) 
-            { 
+            for(i=0;i<16;i++)
+            {
 #ifndef USE_VIDEO_GL
-               video_shrinky[i+1]=0; 
+               video_shrinky[i+1]=0;
 #endif
-               dday-=rzy+1; 
-               if(dday<=0) 
-               { 
-                  dday+=256; 
-                  yskip++; 
+               dday-=rzy+1;
+               if(dday<=0)
+               {
+                  dday+=256;
+                  yskip++;
 #ifndef USE_VIDEO_GL
-                  video_shrinky[yskip]++; 
+                  video_shrinky[yskip]++;
 #endif
-               } 
+               }
 #ifndef USE_VIDEO_GL
-               else 
-                  video_shrinky[yskip]++; 
+               else
+                  video_shrinky[yskip]++;
 #endif
-            } 
-         } 
+            }
+         }
 
     	 if (!neo4all_skip_next_frame)
-         	if (((tileatr>>8)||(tileno!=0))&&(sy<224)) 
-         	{ 
-         		video_draw_spr( 
-         			tileno, 
-         			tileatr >> 8, 
-         			tileatr & 0x01,tileatr & 0x02, 
-         			sx,sy,rzx,yskip); 
-         	} 
+         	if (((tileatr>>8)||(tileno!=0))&&(sy<224))
+         	{
+         		video_draw_spr(
+         			tileno,
+         			tileatr >> 8,
+         			tileatr & 0x01,tileatr & 0x02,
+         			sx,sy,rzx,yskip);
+         	}
 
 
-         sy +=yskip; 
-      }  // for y 
-   }  // for count 
+         sy +=yskip;
+      }  // for y
+   }  // for count
 
-    
+
    if (!neo4all_skip_next_frame)
    {
-   	video_draw_fix(); 
-   	blitter(); 
+   	video_draw_fix();
+   	blitter();
    }
 }
 #endif
@@ -754,7 +754,7 @@ void video_flip(SDL_Surface *surface)
 #ifdef MENU_ALPHA
 
 #ifndef DREAMCAST
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0, 
+  glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0,
     GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, neo4all_texture_surface);
 #else
   glKosTex2D(GL_ARGB1555,512,512,neo4all_texture_surface);
@@ -763,7 +763,7 @@ void video_flip(SDL_Surface *surface)
 #else
 
 #ifndef DREAMCAST
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 512, 0, 
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 512, 0,
     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, neo4all_texture_surface);
 #else
   glKosTex2D(GL_RGB565,512,512,neo4all_texture_surface);
@@ -779,7 +779,7 @@ void video_flip(SDL_Surface *surface)
   glBegin(GL_QUADS);
   	glTexCoord2f(0.0,0.0);
 	glVertex3f(t_x1,t_y1,tile_z);
-	
+
   	glTexCoord2f(1.0,0.0);
 	glVertex3f(t_x2,t_y1,tile_z);
 

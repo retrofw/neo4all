@@ -194,17 +194,17 @@ static void dec_dingoo_volumen(void)
 /*--------------------------------------------------------------------------*/
 void input_init(void) {
     int i;
-    
+
     SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-    
+
     for(i=0;i<SDLK_LAST;i++)
 	keyup[i]=0;
 
-    for(i=0; i<NUMJOYBUTTONS; i++) 
+    for(i=0; i<NUMJOYBUTTONS; i++)
         joyup[0][i] = joyup[1][i] = 0;
 
     /* Player 1 */
-    keyup[SDLK_UP]    				= P1UP;    
+    keyup[SDLK_UP]    				= P1UP;
     keyup[SDLK_DOWN]  				= P1DOWN;
     keyup[SDLK_LEFT]  				= P1LEFT;
     keyup[SDLK_RIGHT] 				= P1RIGHT;
@@ -215,7 +215,7 @@ void input_init(void) {
     keyup[menuControl_bt0[4]] = joyup[0][8]	= P1START | keyup[menuControl_bt0[4]];
     keyup[menuControl_bt0[5]] = joyup[0][9]	= P1SEL | keyup[menuControl_bt0[5]];
 
-    
+
     /* Player 2 */
     keyup[SDLK_w]    				= P2UP;
     keyup[SDLK_s]  	  			= P2DOWN;
@@ -227,7 +227,7 @@ void input_init(void) {
     keyup[menuControl_bt1[3]] = joyup[1][3]	= P2D | keyup[menuControl_bt1[3]];
     keyup[menuControl_bt1[4]] = joyup[1][8]	= P2START | keyup[menuControl_bt1[4]];
     keyup[menuControl_bt1[5]] = joyup[1][9]	= P2SEL | keyup[menuControl_bt1[5]];
-    
+
     /* Special */
     keyup[SDLK_F1]    = SPECIAL;
     keyup[SDLK_F2]    = SPECIAL;
@@ -245,13 +245,13 @@ void input_init(void) {
     for(i=0;i<SDLK_LAST;i++) {
         keydown[i]=~keyup[i];
     }
-    
+
     /* set joy button down mask */
     for(i=0; i<NUMJOYBUTTONS; i++) {
         joydown[0][i]=~joyup[0][i];
         joydown[1][i]=~joyup[1][i];
     }
-    
+
     /* configure joystick axes */
     /* left and up */
     for(i=AXISMIN; i<AXISCENTRE-AXISTHRESHOLD; i++) {
@@ -262,9 +262,9 @@ void input_init(void) {
         joyset[0][0][i]=P1RIGHT;
         joyset[1][0][i]=P2RIGHT;
         joyset[0][1][i]=P1DOWN;
-        joyset[1][1][i]=P2DOWN;        
+        joyset[1][1][i]=P2DOWN;
     }
-    
+
     /* centre */
     for(i=AXISCENTRE-AXISTHRESHOLD; i<AXISCENTRE+AXISTHRESHOLD; i++) {
         joymask[0][0][i]=~0;
@@ -274,9 +274,9 @@ void input_init(void) {
         joyset[0][0][i]=P1RIGHT|P1LEFT;
         joyset[1][0][i]=P2RIGHT|P2LEFT;
         joyset[0][1][i]=P1DOWN|P1UP;
-        joyset[1][1][i]=P2DOWN|P2UP;        
+        joyset[1][1][i]=P2DOWN|P2UP;
     }
-    
+
     /* right and down */
     for(i=AXISCENTRE+AXISTHRESHOLD; i<AXISMAX; i++) {
         joymask[0][0][i]=~P1RIGHT;
@@ -286,10 +286,10 @@ void input_init(void) {
         joyset[0][0][i]=P1LEFT;
         joyset[1][0][i]=P2LEFT;
         joyset[0][1][i]=P1UP;
-        joyset[1][1][i]=P2UP;            
+        joyset[1][1][i]=P2UP;
     }
-        
-    SDL_JoystickEventState(SDL_ENABLE);   
+
+    SDL_JoystickEventState(SDL_ENABLE);
     /* open joysticks */
     for(i=0; i<SDL_NumJoysticks() && i<NUMJOYSTICKS; i++) {
         joystick[i]=SDL_JoystickOpen(i);
@@ -325,15 +325,15 @@ void input_reinit(void)
 	if (input_initted)
 		input_init();
 }
-            
+
 
 void input_shutdown(void) {
     int i;
-    
+
     /* Close joysticks */
     for(i=0; i<NUMJOYSTICKS; i++) {
         if(joystick[i]!=NULL) {
-            SDL_JoystickClose(joystick[i]);    
+            SDL_JoystickClose(joystick[i]);
             joystick[i]=NULL;
         }
     }
@@ -353,7 +353,7 @@ INPUT_STATIC_INLINE void goMenu(void)
 	do{
 		text_draw_nomenu();
     	}while(!SDL_PollEvent(&ev));
-    	while(SDL_PollEvent(&ev)) SDL_Delay(10);
+	while(SDL_PollEvent(&ev)) SDL_Delay(10);
 	cdda_resume();
 	sound_enable();
 	init_autoframeskip();
@@ -364,7 +364,7 @@ INPUT_STATIC_INLINE void goMenu(void)
 #else
 	if (keys==~0)
 	{
-    		int nook=1;
+		int nook=1;
 		pulsando_menu=0;
 #ifdef DINGOO
 		pulsando_escape=0;
@@ -452,9 +452,9 @@ INPUT_STATIC_INLINE void specialKey (SDLKey key) {
 	case SDLK_F1: video_fullscreen_toggle(); break;
 	case SDLK_F2: insert_coin(0); break;
 	case SDLK_F3: insert_coin(1); break;
-        case SDLK_F4: sound_toggle(); break;
-        case SDLK_F12: video_save_snapshot(); break;
-        case SDLK_ESCAPE: exit(0); break;
+    case SDLK_F4: sound_toggle(); break;
+    case SDLK_F12: video_save_snapshot(); break;
+    case SDLK_ESCAPE: exit(0); break;
 #else
 	case SDLK_TAB: insert_coin(0); break;
 	case SDLK_ESCAPE: pulsando_escape=1; break;
@@ -540,7 +540,7 @@ INPUT_STATIC_INLINE void joyMotion (int which, int axis, int value) {
 void processEvents(void) {
 #ifndef AUTO_EVENTS
     SDL_Event event;
-    
+
     update_coin();
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
@@ -614,7 +614,7 @@ void processEvents(void) {
     cuenta++;
 #endif
 }
-        
+
 /*--------------------------------------------------------------------------*/
 unsigned char read_player1(void) {
      return keys&0xff;
@@ -638,6 +638,6 @@ void input_reset(void)
 
     keys   =~0;
     SDL_Delay(133);
-    while(SDL_PollEvent(&event)) 
+    while(SDL_PollEvent(&event))
 	    SDL_Delay(10);
 }

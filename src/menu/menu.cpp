@@ -11,7 +11,6 @@
 #include <unistd.h>
 #endif
 
-
 #include <SDL_mixer.h>
 #include <SDL_image.h>
 
@@ -36,7 +35,6 @@
 #define MENU_FILE_WIN_BOTTOM 	DATA_PREFIX "win_bottom.png"
 #define MENU_FILE_WIN_LEFT 	DATA_PREFIX "win_left.png"
 #define MENU_FILE_WIN_RIGHT 	DATA_PREFIX "win_right.png"
-
 
 #ifdef DREAMCAST
 #define VIDEO_FLAGS_INIT SDL_HWSURFACE|SDL_FULLSCREEN
@@ -131,6 +129,7 @@ void menu_unraise(void)
 		fade16(text_screen,i);
 		text_flip();
 	}
+
 }
 
 static void text_draw_menu_msg()
@@ -283,7 +282,6 @@ static SDL_Surface *load_img_255(char *filename)
 	return ret;
 }
 
-
 void init_text(int splash)
 {
 	SDL_Event ev;
@@ -291,7 +289,6 @@ void init_text(int splash)
 	SDL_Surface *sur;
 	SDL_Rect r;
 	int i,j;
-
 
 	if (!text_screen)
 	{
@@ -419,11 +416,11 @@ void write_text_pos(int x, int y, char * str)
 {
   int i, c;
   SDL_Rect src, dest;
-  
+
   for (i = 0; i < strlen(str); i++)
     {
       c = -1;
-      
+
       if (str[i] >= '0' && str[i] <= '9')
 	c = str[i] - '0';
       else if (str[i] >= 'A' && str[i] <= 'Z')
@@ -444,34 +441,34 @@ void write_text_pos(int x, int y, char * str)
 	c = 65;
       else if (str[i] == ')')
 	c = 66;
-      
+
       if (c >= 0)
 	{
 	  src.x = c * 8;
 	  src.y = 0;
 	  src.w = 8;
 	  src.h = 8;
-	  
+
 	  dest.x = x + (i * 8);
 	  dest.y = y;
 	  dest.w = 8;
 	  dest.h = 8;
-	  
+
 	  SDL_BlitSurface(text_image, &src,
 			  text_screen, &dest);
 	}
       else if (c == -2 || c == -3)
 	{
 	  dest.x = x + (i * 8);
-	  
+
 	  if (c == -2)
 	    dest.y = y  + 7;
 	  else if (c == -3)
 	    dest.y = y  + 3;
-	  
+
 	  dest.w = 8;
 	  dest.h = 1;
-	  
+
 	  SDL_FillRect(text_screen, &dest, menu_barra0_color);
 	}
     }
@@ -484,7 +481,6 @@ void write_text(int x, int y, char * str)
 }
 
 #define exact_write_text(X,Y,STR) SFont_PutString(text_screen,(X),(Y),(STR))
-
 
 /* Write text, inverted: */
 void write_text_inv(int x, int y, char * str)
@@ -551,7 +547,7 @@ void write_centered_text(int y, char * str)
 void write_num(int x, int y, int v)
 {
   char str[24];
-  
+
   sprintf(str, "%d", v);
   write_text(x, y, str);
 }
@@ -559,7 +555,7 @@ void write_num(int x, int y, int v)
 void write_num_inv(int x, int y, int v)
 {
   char str[24];
-  
+
   sprintf(str, "%d", v);
   write_text_inv(x, y, str);
 }
@@ -567,7 +563,7 @@ void write_num_inv(int x, int y, int v)
 void write_num_sel(int x, int y, int w, int v)
 {
   char str[24];
-  
+
   sprintf(str, "%d", v);
   write_text_sel(x, y, w, str);
 }
@@ -575,7 +571,7 @@ void write_num_sel(int x, int y, int w, int v)
 void text_draw_barra(int x, int y, int w, int h, int per, int max)
 {
 	SDL_Rect dest;
-if (h>5) h-=4;
+	if (h>5) h-=4;
 	dest.x=x-1;
 	dest.y=y-1;
 	dest.w=w+2;
@@ -598,7 +594,7 @@ void text_draw_window(int x, int y, int w, int h, char *title)
 {
 	int i,j;
 	SDL_Rect dest;
-	
+
 	dest.x=x-6;
 	dest.y=y-22;
 	dest.w=80;
@@ -619,7 +615,6 @@ void text_draw_window(int x, int y, int w, int h, char *title)
 	dest.w=80;
 	dest.h=40;
 	SDL_BlitSurface(text_win_uright,NULL,text_screen,&dest);
-
 
 	for(i=0;i<(h-16);i+=16)
 	{
@@ -656,7 +651,6 @@ void text_draw_window(int x, int y, int w, int h, char *title)
 	dest.w=80;
 	dest.h=40;
 	SDL_BlitSurface(text_win_bright,NULL,text_screen,&dest);
-
 
 	exact_write_text_inv(x+72, y-18 , title);
 
@@ -710,17 +704,17 @@ void text_draw_window(int x, int y, int w, int h, char *title)
 
 
 	dest.x = rx - 2;
-	dest.y = ry; 
+	dest.y = ry;
 	dest.w = 2; //rw + 4;
 	dest.h = rh;// + 14; //16;
 	SDL_FillRect(text_screen, &dest, menu_win0_color);
 	dest.x = rx - 2;
-	dest.y = ry+rh; 
+	dest.y = ry+rh;
 	dest.w = rw+4; //rw + 4;
 	dest.h = 2;// + 14; //16;
 	SDL_FillRect(text_screen, &dest, menu_win0_color);
 	dest.x = rx+rw;
-	dest.y = ry; 
+	dest.y = ry;
 	dest.w = 2; //rw + 4;
 	dest.h = rh;// + 14; //16;
 	SDL_FillRect(text_screen, &dest, menu_win0_color);
