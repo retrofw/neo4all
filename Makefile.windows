@@ -1,0 +1,54 @@
+O      = o
+RM     = rm -f
+CC     = i686-pc-cygwin-gcc-3
+CXX    = i686-pc-cygwin-g++-3
+STRIP  = strip
+
+CDROM_OBJ=src/cdrom/win32.o
+ifndef FAME_C_CORE
+FAME_OBJ=src/68k/fame/fame_win.o
+FAME_SRC=src/68k/fame/fame_win.asm
+ASM_TYPE=gnuwin32
+endif
+
+all: program
+
+src/z80/raze/raze1.asm: src/z80/raze/raze.asm
+	nasm -f gnuwin32 -e src/z80/raze/raze.asm -o src/z80/raze/raze1.asm -Isrc/z80/raze/
+
+src/z80/raze/raze.o: src/z80/raze/raze1.asm
+	nasm -f gnuwin32 src/z80/raze/raze1.asm -o src/z80/raze/raze.o -psrc/z80/raze/raze.reg
+
+include config.mk
+
+PROG   = $(NAME).exe
+
+program: $(PROG)
+
+DEFAULT_CFLAGS = -I/usr/local/include `sdl-config --cflags` -D_REENTRANT -DINLINE="static inline" -DLOWERCASEFILES -DDATA_PREFIX=\"data/\" -DROM_PREFIX=\"roms\" -DMEMCARD_PREFIX=\"/tmp/\"
+LDFLAGS        = `sdl-config --libs` -lmingw32 -lmingwex -lSDL_mixer -mwindows
+
+
+MORE_CFLAGS = -O3 -fomit-frame-pointer -fstrict-aliasing -Isrc -Isrc/68k -Isrc/video
+
+CFLAGS  = $(DEFAULT_CFLAGS) $(NEO4ALL_CFLAGS) $(MORE_CFLAGS)
+CPPFLAGS = $(CFLAGS)
+
+
+$(PROG): $(OBJS) $(Z80_OBJS) $(MEMORY_OBJ) $(OBJS_68K)
+	$(CC) -L/usr/lib/mingw -L/usr/local/lib -o $(PROG) -lmingw32 $(OBJS) $(OBJS_68K) $(MEMORY_OBJ) $(Z80_OBJS) -lstdc++ -lSDL_static_129 -mwindows -mno-cygwin -luser32 -lgdi32 -lwinmm -ldxguid
+	$(STRIP) $(PROG)
+
+#$(PROG): $(OBJS) $(Z80_OBJS) $(MEMORY_OBJ) $(OBJS_68K)
+#	$(CC) -L/usr/local/lib -L/usr/lib/w32api/ -L/usr/X11R6/lib -lglu32  -lopengl32 -o $(PROG) -lmingw32 $(OBJS) $(OBJS_68K) $(MEMORY_OBJ) $(Z80_OBJS) -lglu32  -lopengl32 -lSDL_static_129 -lGL -lpthread -mwindows -mno-cygwin -luser32 -lgdi32 -lwinmm -ldxguid
+#	$(STRIP) $(PROG)
+
+
+run: $(PROG)
+	./$(PROG)
+
+clean:
+	$(RM) $(PROG) $(OBJS) src/68k/c68k/cpu68k.o src/z80/z80intrf.o src/z80/raze/raze1.asm $(MEMORY_OBJ)  stdout.txt stderr.txt
+	$(RM) $(Z80_OBJS) $(OBJS_68K)
+
+

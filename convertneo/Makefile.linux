@@ -1,0 +1,55 @@
+TARGET	=	convertneo
+
+
+CC =		gcc
+STRIP=		strip
+
+
+SDL_CFLAGS =	`sdl-config --cflags`
+SDL_LDFLAGS =	`sdl-config --libs`
+
+
+CFLAGS =	-Wall -Wno-switch -march=pentium ${SDL_CFLAGS} \
+		-ffast-math -fno-common -ffreestanding -fno-builtin -Isrc/ \
+		-fno-exceptions -fstrict-aliasing -O6 -I/usr/local/include \
+		-DDATA_PREFIX=\"example/\" -DFILE_SEPARATOR=\"/\" \
+		-ISFont -Isrc/ -I. -I/usr/include \
+
+
+LDFLAGS =	-lSDL_image ${SDL_LDFLAGS} 
+
+
+
+.CFILES	=	\
+		src/main.c \
+		src/driver.c \
+		src/fileio.c \
+		src/list.c \
+		src/pbar.c \
+		src/video.c \
+		src/neocrypt.c \
+		src/neoaes.c \
+		src/unzip.c \
+		src/emu.c 
+
+
+all: $(TARGET)
+
+
+
+OBJS =		$(.CFILES:.c=.o)
+
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
+	$(STRIP) $(TARGET)
+
+
+
+
+run:	$(TARGET)
+	./$(TARGET)
+
+
+clean:
+	rm -f $(OBJS) $(TARGET)

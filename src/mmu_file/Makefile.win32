@@ -1,0 +1,17 @@
+
+CFLAGS= -O2 -DMMU_FILE_DEBUG
+CPPFLAGS=${CFLAGS}
+
+all: mmu_test
+
+OBJS=main.o mmu_file.o
+
+mmu_test: ${OBJS}
+	gcc -lstdc++ ${OBJS} -o mmu_test
+
+
+run: mmu_test
+	./mmu_test
+
+clean:
+	rm -f ${OBJS} mmu_test.exe mmu_test

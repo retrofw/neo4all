@@ -1,0 +1,50 @@
+TARGET	=	convertneo
+
+
+CC =		gcc
+STRIP=		strip
+
+
+#SDL_CFLAGS =	-I/usr/local/include/SDL -Dmain=SDL_main -I/usr/include/mingw -DWIN32 -Uunix -mn o-cygwin
+
+#SDL_LDFLAGS =	-L/usr/local/lib -lmingw32 -lSDLmain -lSDL -mwindows -mno-cygwin -luser32 -lgdi3 2 -lwinmm
+
+
+SDL_CFLAGS =	-I/usr/local/include `sdl-config --cflags` -DWIN32
+SDL_LDFLAGS =	`sdl-config --libs`
+
+
+CFLAGS = 	-march=pentium ${SDL_CFLAGS} -O3 -fomit-frame-pointer -fstrict-aliasing -Isrc
+
+
+.CFILES	=	\
+		src/main.c \
+		src/driver.c \
+		src/fileio.c \
+		src/list.c \
+		src/pbar.c \
+		src/video.c \
+		src/neocrypt.c \
+		src/neoaes.c \
+		src/unzip.c \
+		src/emu.c 
+
+
+all: $(TARGET)
+
+
+
+OBJS =		$(.CFILES:.c=.o)
+
+
+$(TARGET):	$(OBJS)
+	$(CC) -L/usr/local/lib -L/usr/lib/w32api/ -L/usr/X11R6/lib  -o $(TARGET) -lmingw32 $(OBJS)  -lSDL_static_129  -lpthread -mwindows -mno-cygwin -luser32 -lgdi32  -lwinmm -ldxguid
+	$(STRIP) $(TARGET).exe
+
+
+run:		$(TARGET)
+	./$(TARGET)
+
+
+clean:
+	rm -f $(OBJS) $(TARGET).exe stdout.txt stderr.txt

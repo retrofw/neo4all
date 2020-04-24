@@ -1,0 +1,56 @@
+O      = o
+RM     = rm -f
+CC     = gcc
+CXX    = g++
+STRIP  = strip
+
+CDROM_OBJ=src/cdrom/linux.o
+ifndef FAME_C_CORE
+FAME_OBJ=src/68k/fame/fame.o
+FAME_SRC=src/68k/fame/fame.asm
+ASM_TYPE=elf
+endif
+
+all: program
+
+src/z80/raze/raze1.asm: src/z80/raze/raze.asm
+	nasm -DELF_OBJECT_CODE -e src/z80/raze/raze.asm -o src/z80/raze/raze1.asm -Isrc/z80/raze/
+
+src/z80/raze/raze.o: src/z80/raze/raze1.asm
+	nasm -DELF_OBJECT_CODE -f elf src/z80/raze/raze1.asm -o src/z80/raze/raze.o -psrc/z80/raze/raze.reg
+
+include config.mk
+
+PROG   = $(NAME)
+
+program: $(PROG)
+
+DEFAULT_CFLAGS = `sdl-config --cflags` -D_REENTRANT -DINLINE="static inline" -DLOWERCASEFILES -DDATA_PREFIX=\"data/\" -DROM_PREFIX=\"roms\" -DMEMCARD_PREFIX=\"/tmp/\"
+LDFLAGS        = `sdl-config --libs` -lSDL_image -lstdc++
+
+ifdef VIDEOGL
+LDFLAGS+= -lGL
+endif
+
+ifdef MENU_MUSIC
+LDFLAGS+= -lSDL_mixer
+endif
+
+
+MORE_CFLAGS = -O3 -fomit-frame-pointer -fstrict-aliasing -Isrc -Isrc/68k -Isrc/video
+
+CFLAGS  = $(DEFAULT_CFLAGS) $(NEO4ALL_CFLAGS) $(MORE_CFLAGS)
+CPPFLAGS = $(CFLAGS)
+
+
+$(PROG): $(OBJS) $(Z80_OBJS) $(MEMORY_OBJ) $(OBJS_68K)
+	$(CC) $(CFLAGS) -o $(PROG) $(OBJS) $(OBJS_68K) $(MEMORY_OBJ) $(Z80_OBJS) $(LDFLAGS)
+	$(STRIP) $(PROG)
+
+
+run: $(PROG)
+	./$(PROG)
+
+clean:
+	$(RM) $(PROG) $(OBJS) src/68k/c68k/cpu68k.o src/z80/z80intrf.o src/z80/raze/raze1.asm $(MEMORY_OBJ)
+	$(RM) $(Z80_OBJS) $(OBJS_68K)
