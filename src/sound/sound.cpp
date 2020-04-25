@@ -88,7 +88,7 @@ int init_sdl_audio(void)
 #ifdef Z80_EMULATED
 #ifdef MENU_MUSIC
     unsigned i;
-    Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16, 2, NB_SAMPLES);
+    Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, 2, NB_SAMPLES);
     for(i=0;i<NUM_SAMPLES;i++) {
 	    sample[i]=Mix_LoadWAV(sample_filename[i]);
     }
@@ -100,7 +100,9 @@ int init_sdl_audio(void)
 
 #ifdef WORDS_BIGENDIAN
     desired.format = AUDIO_S16MSB;
-    desired.format = AUDIO_S16;
+#else
+    desired.format = AUDIO_S16SYS;
+#endif
     desired.channels = 2;
     desired.callback = update_sdl_stream;
     desired.userdata = NULL;
