@@ -85,6 +85,10 @@ static void obten_colores(void)
 
 void menu_raise(void)
 {
+#if 1
+	SDL_FillRect(text_screen,NULL,0); //0xFFFFFFFF);
+	text_flip(); text_flip(); text_flip();
+#else
 	int i;
 	for(i=64;i>=0;i-=4)
 	{
@@ -94,10 +98,15 @@ void menu_raise(void)
 		fade16(text_screen,i);
 		text_flip();
 	}
+#endif
 }
 
 void menu_unraise(void)
 {
+#if 1
+	SDL_FillRect(text_screen,NULL,0); //0xFFFFFFFF);
+	text_flip(); text_flip(); text_flip();
+#else
 	int i;
 	for(i=0;i<=64;i+=4)
 	{
@@ -107,7 +116,7 @@ void menu_unraise(void)
 		fade16(text_screen,i);
 		text_flip();
 	}
-
+#endif
 }
 
 static void text_draw_menu_msg()

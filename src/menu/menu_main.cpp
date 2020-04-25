@@ -601,7 +601,6 @@ int run_mainMenu()
 			case MAIN_MENU_CASE_REBOOT:
 				sound_play_bye();
 				menu_unraise();
-				SDL_Delay(333);
 				SDL_Quit();
 				exit(0);
 				break;

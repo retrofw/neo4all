@@ -4,6 +4,7 @@
 
 void fade16(SDL_Surface *screen, unsigned short n)
 {
+#if 0
 	int i,total=screen->pitch*screen->h/2;
 	SDL_LockSurface(screen);
 	unsigned short rs=screen->format->Rshift;
@@ -38,6 +39,7 @@ void fade16(SDL_Surface *screen, unsigned short n)
 			);
 	}
 	SDL_UnlockSurface(screen);
+#endif
 }
 
 
@@ -45,6 +47,7 @@ void fade16(SDL_Surface *screen, unsigned short n)
 
 void fade16(SDL_Surface *screen, unsigned short n)
 {
+#if 0
 	int i,j,total_x=(screen->pitch/2),total_y=screen->h;
 	SDL_LockSurface(screen);
 	unsigned short rs=screen->format->Rshift;
@@ -82,6 +85,7 @@ void fade16(SDL_Surface *screen, unsigned short n)
 	}
 	}
 	SDL_UnlockSurface(screen);
+#endif
 }
 
 #endif
