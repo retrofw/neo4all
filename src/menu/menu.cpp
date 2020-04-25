@@ -311,58 +311,16 @@ void init_text(int splash)
 	r.h=sur->w;
 	r.w=sur->h;
 	SDL_FillRect(text_screen,NULL,0); //0xFFFFFFFF);
-	while(SDL_PollEvent(&ev)) SDL_Delay(50);
-	for (i=128;(i>-8)&&(!toexit);i-=8)
-	{
-#ifdef DREAMCAST
-		vid_waitvbl();
-#else
-		SDL_Delay(50);
-#endif
-		SDL_FillRect(text_screen,NULL,0); //0xFFFFFFFF);
-		SDL_BlitSurface(sur,NULL,text_screen,&r);
-		fade16(text_screen,i);
-		text_flip();
-		while(SDL_PollEvent(&ev)) toexit=1;
-	}
-	for(i=0;(i<23)&&(!toexit);i++)
-	{
-		while(SDL_PollEvent(&ev)) toexit=1;
-		SDL_Delay(100);
-	}
-	for(i=0;(i<128)&&(!toexit);i+=16)
-	{
-#ifdef DREAMCAST
-		vid_waitvbl();
-#else
-		SDL_Delay(50);
-#endif
-		SDL_FillRect(text_screen,NULL,0); //0xFFFFFFFF);
-		SDL_BlitSurface(sur,NULL,text_screen,&r);
-		fade16(text_screen,i);
-		text_flip();
-		while(SDL_PollEvent(&ev)) toexit=1;
-	}
-	for(i=128;(i>-8)&&(!toexit);i-=8)
-	{
-#ifdef DREAMCAST
-		vid_waitvbl();
-#else
-		SDL_Delay(50);
-#endif
-		text_draw_background();
-		fade16(text_screen,i);
-		text_flip();
-		while(SDL_PollEvent(&ev)) toexit=1;
-	}
+
+	SDL_BlitSurface(sur,NULL,text_screen,&r);
+	text_flip();
 	SDL_FreeSurface(sur);
 #else
-#ifndef DREAMCAST
-	chdir(ROM_PREFIX);
-#else
-//	fs_chdir(ROM_PREFIX);
-	fs_chdir("/");//ROM_PREFIX);
-#endif
+
+	char file[1024];
+	sprintf(file, "%s", neo4all_image_file);
+	dirname(file);
+	chdir(file);
 #endif
 //	menu_msg_time=SDL_GetTicks();
 }
