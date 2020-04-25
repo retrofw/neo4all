@@ -42,22 +42,22 @@ static unsigned char sound_muted=0x3;
 #ifdef MENU_MUSIC
 #include <SDL_mixer.h>
 enum{
+	SAMPLE_BEEP,
+	SAMPLE_ERROR,
 	SAMPLE_LOADING,
 	SAMPLE_SAVING,
 	SAMPLE_MENU,
 	SAMPLE_BYE,
-	SAMPLE_BEEP,
-	SAMPLE_ERROR,
 	NUM_SAMPLES
 };
 
 static char *sample_filename[NUM_SAMPLES]={
+	DATA_PREFIX "beep.wav",
+	DATA_PREFIX "error.wav",
 	DATA_PREFIX "loading.wav",
 	DATA_PREFIX "saving.wav",
 	DATA_PREFIX "menu.wav",
 	DATA_PREFIX "goodbye.wav",
-	DATA_PREFIX "beep.wav",
-	DATA_PREFIX "error.wav"
 };
 
 static Mix_Chunk *sample[NUM_SAMPLES];
@@ -125,28 +125,31 @@ void sound_play_menu_music(void)
 void sound_play_loading(void)
 {
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_LOADING);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_LOADING);
 #endif
 }
 
 void sound_play_saving(void)
 {
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_SAVING);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_SAVING);
 #endif
 }
 
 void sound_play_menu(void)
 {
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_MENU);
+	// play_sample(SAMPLE_MENU);
 #endif
 }
 
 void sound_play_bye(void)
 {
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_BYE);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_BYE);
 #endif
 }
 
@@ -160,7 +163,8 @@ void sound_play_beep(void)
 void sound_play_error(void)
 {
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_ERROR);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_ERROR);
 #endif
 }
 
