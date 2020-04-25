@@ -557,14 +557,14 @@ int run_mainMenu()
 						mainMenu_case=1;
 				}
 				else
-					if (need_reset>0)
+					// if (need_reset>0)
 						mainMenu_case=2;
-					else
-					{
-						mainMenu_case=-1;
-						drawNoCD();
+					// else
+					// {
+					// 	mainMenu_case=-1;
+					// 	drawNoCD();
 						break;
-					}
+					// }
 #else
 				mainMenu_case=1;
 #endif

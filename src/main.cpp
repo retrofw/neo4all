@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <libgen.h> // for dirname
 
 #include <SDL.h>
 #include <ctype.h>
@@ -59,7 +60,7 @@ int	neogeo_sound_enable=1;
 */
 int	neogeo_sound_enable=1;
 
-
+extern char neo4all_image_file[];
 
 static int neogeo_frameskip_count=0;
 
@@ -482,6 +483,9 @@ int	main(int argc, char* argv[])
 #endif
 #endif
 
+if (argc > 0) {
+	strncpy(neo4all_image_file,argv[1],1024);
+}
 
 #ifndef AES
 	if (!neo4all_load_bios())
@@ -489,9 +493,15 @@ int	main(int argc, char* argv[])
 #endif
 
 #if defined(SHOW_MENU) && !defined(AUTO_EVENTS)
-	do{
-  		run_mainMenu();
-	}while(!neogeo_cdrom_init1());
+	if (argc > 0) {
+		if (!neogeo_cdrom_init1())
+			exit(-1);
+	} else {
+		do {
+			run_mainMenu();
+		} while(!neogeo_cdrom_init1());
+	}
+
 #else
 	if (!neogeo_cdrom_init1())
 		exit(-1);
