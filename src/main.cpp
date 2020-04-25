@@ -466,6 +466,8 @@ int	main(int argc, char* argv[])
 
 	show_icon();
 
+	init_text(1);
+
 #ifndef AES
 	if (!neo4all_init_memory())
 		return -3;
@@ -480,7 +482,6 @@ int	main(int argc, char* argv[])
 #endif
 #endif
 
-	init_text(1);
 
 #ifndef AES
 	if (!neo4all_load_bios())
