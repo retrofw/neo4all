@@ -139,7 +139,7 @@ int	video_init(void)
 	if (video_set_mode(VIDEO_NORMAL)==0)
 		return 0;
 
-#ifdef DOUBLE_BUFFER
+#if 1 //DOUBLE_BUFFER
 //	video_buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 226, 16, 0xF800, 0x07E0, 0x001F, 0x0000);
 	video_buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, screen->format->Rmask, screen->format->Gmask, screen->format->Bmask, screen->format->Amask);
 #else
