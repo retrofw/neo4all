@@ -43,7 +43,7 @@ static char *text_str_filter_bilinear="Bilinear";
 static char *text_str_control="Edit Controls";
 static char *text_str_cdaudio="CDDA";
 static char *text_str_separator="~~~~~~~~~~~~~~~~~~~~~~";
-#if !defined(AES) && !defined(CDISO)
+#if 1 //!defined(AES) && !defined(CDISO)
 static char *text_str_reset="Reset";
 #else
 static char *text_str_reset="Select Game";
@@ -583,6 +583,8 @@ int run_mainMenu()
 				break;
 
 			case MAIN_MENU_CASE_RESET:
+				mainMenu_case=2;
+#if 0
 #if defined(AES) || defined(CDISO)
 				if (need_reset>0)
 					run_menuLoad();
@@ -596,6 +598,7 @@ int run_mainMenu()
 					mainMenu_case=2;
 				else
 					mainMenu_case=1;
+#endif
 #endif
 				break;
 			case MAIN_MENU_CASE_REBOOT:
