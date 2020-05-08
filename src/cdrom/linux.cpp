@@ -1,7 +1,7 @@
 #include <string.h>
 #include <SDL.h>
 #include <mntent.h>
-
+#include <sys/stat.h>
 
 #define MOUNT_TAB "/etc/mtab"
 
@@ -23,7 +23,8 @@ int getMountPoint(int drive, char *mountpoint)
 {
 // #ifdef DEBUG_MEMORY
 #if 1
-strcpy(mountpoint,"/cdrom/");
+strcpy(mountpoint,"/tmp/cdrom/");
+mkdir(mountpoint, 0777);
 return 1;
 #else
     FILE *mtab;
