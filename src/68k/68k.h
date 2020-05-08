@@ -36,11 +36,11 @@ static __inline__ int _68k_emulate(int cycles)
 	int i;
 	for(i=0;i<cycles;i+=8)
 	{
-		printf("\tPC=%.8X  OPCODE=%.4X %.4X %.4X %.4X  SR=%.8X\n", m68k_get_pc(), m68k_fetch(m68k_get_pc(),0),m68k_fetch(2+m68k_get_pc(),0),m68k_fetch(4+m68k_get_pc(),0),m68k_fetch(6+m68k_get_pc(),0),m68k_get_register(M68K_REG_SR));
-		printf("A0=%.8X  A1=%.8X  A2=%.8X  A3=%.8X\n",_68k_areg(0),_68k_areg(1),_68k_areg(2),_68k_areg(3));
-		printf("A4=%.8X  A5=%.8X  A6=%.8X  A7=%.8X\n",_68k_areg(4),_68k_areg(5),_68k_areg(6),_68k_areg(7));
-		printf("D0=%.8X  D1=%.8X  D2=%.8X  D3=%.8X\n",_68k_dreg(0),_68k_dreg(1),_68k_dreg(2),_68k_dreg(3));
-		printf("D4=%.8X  D5=%.8X  D6=%.8X  D7=%.8X\n",_68k_dreg(4),_68k_dreg(5),_68k_dreg(6),_68k_dreg(7));
+		// printf("\tPC=%.8X  OPCODE=%.4X %.4X %.4X %.4X  SR=%.8X\n", m68k_get_pc(), m68k_fetch(m68k_get_pc(),0),m68k_fetch(2+m68k_get_pc(),0),m68k_fetch(4+m68k_get_pc(),0),m68k_fetch(6+m68k_get_pc(),0),m68k_get_register(M68K_REG_SR));
+		// printf("A0=%.8X  A1=%.8X  A2=%.8X  A3=%.8X\n",_68k_areg(0),_68k_areg(1),_68k_areg(2),_68k_areg(3));
+		// printf("A4=%.8X  A5=%.8X  A6=%.8X  A7=%.8X\n",_68k_areg(4),_68k_areg(5),_68k_areg(6),_68k_areg(7));
+		// printf("D0=%.8X  D1=%.8X  D2=%.8X  D3=%.8X\n",_68k_dreg(0),_68k_dreg(1),_68k_dreg(2),_68k_dreg(3));
+		// printf("D4=%.8X  D5=%.8X  D6=%.8X  D7=%.8X\n",_68k_dreg(4),_68k_dreg(5),_68k_dreg(6),_68k_dreg(7));
 		fflush(stdout);
 		m68k_emulate(1);
 //if (m68k_get_pc()==0x00001630) m68k_emulate(1);
