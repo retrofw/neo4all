@@ -183,25 +183,15 @@ void	video_shutdown(void)
 	//free(video_vidram);
 }
 
-#ifdef DREAMCAST
-#include <SDL_dreamcast.h>
-#endif
 
 //----------------------------------------------------------------------------
 int	video_set_mode(int mode)
 {
 #ifndef USE_VIDEO_GL
-#ifdef DREAMCAST
-//	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_HWPALETTE|SDL_HWSURFACE|SDL_DOUBLEBUF))==NULL) {
-	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_HWPALETTE|SDL_HWSURFACE|SDL_FULLSCREEN|SDL_DOUBLEBUF))==NULL) {
-//	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_HWPALETTE|SDL_HWSURFACE|SDL_FULLSCREEN))==NULL) {
-//	if ((screen=SDL_SetVideoMode(512, 256, 16, SDL_HWPALETTE|SDL_HWSURFACE|SDL_DOUBLEBUF))==NULL) {
-#else
 #ifndef DINGUX
 	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_HWPALETTE|SDL_HWSURFACE|SDL_DOUBLEBUF))==NULL) {
 #else
 	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE))==NULL) {
-#endif
 #endif
 
 #else
@@ -213,12 +203,6 @@ int	video_set_mode(int mode)
         	exit( -1 );
 		return 0;
 	}
-#ifdef DREAMCAST
-#ifndef USE_VIDEO_GL
-	SDL_DC_SetWindow(320,240);
-	SDL_DC_VerticalWait(SDL_FALSE);
-#endif
-#endif
 
 	return 1;
 }
@@ -235,13 +219,8 @@ void	video_precalc_lut(void)
 	back_gamma=gamma_correction;
 
 #ifdef USE_VIDEO_GL
-#ifdef DREAMCAST
-	r1=0;
-	r3=10;
-#else
 	r1=10;
 	r3=0;
-#endif
 	r2=5;
 	mult=31;
 	mr=0x8000;
@@ -264,7 +243,6 @@ void	video_precalc_lut(void)
 }
 
 
-#ifndef DREAMCAST
 void snapshot_init(void)
 {
 	/* This function sets up snapshot number */
@@ -299,8 +277,3 @@ void video_fullscreen_toggle(void)
 #endif
 
 }
-#else
-void snapshot_init(void) { }
-void video_save_snapshot(void) { }
-void video_fullscreen_toggle(void) { }
-#endif

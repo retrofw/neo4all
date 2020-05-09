@@ -27,9 +27,6 @@ unsigned char	video_shrinky[17];
 
 unsigned eficiencia_media=50;
 
-#ifdef DREAMCAST
-#include<kos.h>
-#else
 #include<string.h>
 #define sq_set16(aaa,bbb,ccc)	{ \
 				int sqinc; \
@@ -38,7 +35,6 @@ unsigned eficiencia_media=50;
 				for(sqinc=0;sqinc<ccc;sqinc++) \
 					sqsrc[sqinc]=sqset; \
 				}
-#endif
 
 static int show_message=0;
 static char _show_message_str[40]= {
@@ -88,31 +84,18 @@ void blitter(void) {
 	SDL_Flip(screen);
 #else
 
-#ifndef DREAMCAST
   glClearColor(
 	((video_paletteram_pc[4095]>>0)&0x1F)/31.0,
 	((video_paletteram_pc[4095]>>5)&0x1F)/31.0,
 	((video_paletteram_pc[4095]>>10)&0x1F)/31.0,
 	1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#else
-  glKosBeginFrame();
-  pvr_set_bg_color(
-	((float)((video_paletteram_pc[4095]>>10)&0x1F))/31.0,
-	((float)((video_paletteram_pc[4095]>>5)&0x1F))/31.0,
-	((float)((video_paletteram_pc[4095]>>0)&0x1F))/31.0);
-  glKosFinishList();
-#endif
 
   video_draw_tile_textures();
   video_draw_font_textures();
   neo4all_draw_boders();
 
-#ifndef DREAMCAST
     SDL_GL_SwapBuffers();
-#else
-    glKosFinishFrame();
-#endif
     neo4all_glframes++;
 #endif
 #ifdef DEBUG_GL
@@ -733,9 +716,6 @@ void video_flip(SDL_Surface *surface)
 		console_draw_all_background();
   }
 #endif
-#ifdef DREAMCAST
-  glKosBeginFrame();
-#endif
   glClearColor( 0.0,0.0,0.0, 255.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -753,28 +733,17 @@ void video_flip(SDL_Surface *surface)
 
 #ifdef MENU_ALPHA
 
-#ifndef DREAMCAST
   glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0,
     GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, neo4all_texture_surface);
-#else
-  glKosTex2D(GL_ARGB1555,512,512,neo4all_texture_surface);
-#endif
 
 #else
 
-#ifndef DREAMCAST
   glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 512, 0,
     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, neo4all_texture_surface);
-#else
-  glKosTex2D(GL_RGB565,512,512,neo4all_texture_surface);
-#endif
 
 #endif
 
   double t_x1=0.0,t_y1=0.0,t_x2=512.0,t_y2=512.0;
-#ifdef DREAMCAST
-  t_y1+=4.0; t_y2+=4.0;
-#endif
 
   glBegin(GL_QUADS);
   	glTexCoord2f(0.0,0.0);
@@ -790,11 +759,7 @@ void video_flip(SDL_Surface *surface)
 	glVertex3f(t_x1,t_y2,tile_z);
   glEnd();
 
-#ifndef DREAMCAST
   SDL_GL_SwapBuffers();
-#else
-  glKosFinishFrame();
-#endif
   used_blitter=0;
 #endif
 }

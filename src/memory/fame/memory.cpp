@@ -16,7 +16,7 @@
 
 #include "fame/fame.h"
 
-#if defined(DREAMCAST) || defined(USE_FAME_C_CORE)
+#if defined(USE_FAME_C_CORE)
 #define M68KCONTEXT m68kcontext
 #else
 #define M68KCONTEXT _m68kcontext

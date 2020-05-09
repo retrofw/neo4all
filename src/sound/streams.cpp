@@ -143,9 +143,7 @@ void streamupdate(int len)
 	    }
 	}
     }
-#ifndef DREAMCAST
     SDL_LockAudio();
-#endif
     {
     	register Uint16 *pl = play_buffer;
 	register Uint16 *bl = left_buffer;
@@ -157,9 +155,7 @@ void streamupdate(int len)
 		*pl++ = *br++;
     	}
     }
-#ifndef DREAMCAST
     SDL_UnlockAudio();
-#endif
 }
 
 int stream_init_multi(int channels, int param,

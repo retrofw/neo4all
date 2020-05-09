@@ -2,20 +2,6 @@
 
 void *buffer;
 
-#ifdef DREAMCAST
-#define PREFIX "/rd/"
-
-extern uint8 romdisk[];
-KOS_INIT_FLAGS(INIT_DEFAULT);
-KOS_INIT_ROMDISK(romdisk);
-
-int getMe(int index)
-{
-	int *b=(int *b)buffer;
-	return b[index];
-}
-
-#else
 
 #define PREFIX "/tmp/"
 
@@ -64,7 +50,6 @@ int getMe(int index)
 	return ret;
 }
 
-#endif
 
 int main()
 {

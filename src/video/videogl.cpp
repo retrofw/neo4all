@@ -30,10 +30,8 @@ TILE_LIST tile_list[TCACHE_SIZE+FCACHE_SIZE];
 unsigned n_tile_list=0;
 unsigned n_font_list=0;
 
-#ifndef DREAMCAST
 GLint tile_opengl_tex[TCACHE_SIZE+FCACHE_SIZE];
 GLint black_opengl_tex;
-#endif
 
 GLint screen_texture;
 
@@ -50,10 +48,8 @@ float tile_z=TILE_Z_INIT;
 unsigned neo4all_glframes=8;
 
 static void init_cache(void) {
-#ifndef DREAMCAST
     int i;
     GLuint texture;
-#endif
 
     glEnable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -65,45 +61,24 @@ static void init_cache(void) {
     {
 	neo4all_texture_buffer_free=calloc(64+(16*16*2),1);
 	neo4all_texture_buffer=(void *)(((((unsigned)neo4all_texture_buffer_free)+32)/32)*32);
-#ifdef DREAMCAST
-	{
-		unsigned dcpvrmem=(unsigned)pvr_mem_malloc( 
-			(16*16*2*(TCACHE_SIZE))+
-			(8*8*2*(FCACHE_SIZE))
-				);
-		neo4all_texture_real_buffer=(void *)dcpvrmem;
-		dcpvrmem+=(16*16*2*TCACHE_SIZE);
-		neo4all_font_real_buffer=(void *)dcpvrmem;
-		dcpvrmem+=(8*8*2*(FCACHE_SIZE));
-		neo4all_texture_surface=(void *)dcpvrmem;
-        	neo4all_black_texture_buffer=(void *)dcpvrmem;
-	}
-#else
 	neo4all_texture_real_buffer=calloc(16*16*2,TCACHE_SIZE);
 	neo4all_font_real_buffer=calloc(8*8*2,FCACHE_SIZE);
 	neo4all_texture_surface=calloc(512*512,2);
         neo4all_black_texture_buffer=(void *)calloc(16*16,2);
-#endif
 
     }
 
-#ifndef DREAMCAST
     for(i=0;i<TCACHE_SIZE+FCACHE_SIZE;i++)
 	glGenTextures(1,(GLuint *)&tile_opengl_tex[i]);
     glGenTextures(1,(GLuint *)&black_opengl_tex);
-#endif
     video_reset_gl();
 }
 
 static void free_cache(void) {
-#ifndef DREAMCAST
     free(neo4all_texture_real_buffer);
     free(neo4all_font_real_buffer);
     free(neo4all_texture_surface);
     free(neo4all_black_texture_buffer);
-#else
-    pvr_mem_free(neo4all_texture_real_buffer);
-#endif
     free(neo4all_texture_buffer_free);
     neo4all_texture_buffer=NULL;
 }
@@ -135,11 +110,7 @@ SDL_bool init_video_gl(void) {
 //    blitter(); used_blitter=0;
 
 #ifdef MENU_ALPHA
-#ifdef DREAMCAST
-    screen = SDL_CreateRGBSurfaceFrom(neo4all_texture_surface, 320, 240, 16, 1024, 0x7C00, 0x3E0, 0x1F, 0x8000);
-#else
     screen = SDL_CreateRGBSurfaceFrom(neo4all_texture_surface, 320, 240, 16, 1024, 0x1F, 0x3E0, 0x7C00, 0x8000);
-#endif
     SDL_FillRect(screen,NULL,0x8000);
 #else
     screen = SDL_CreateRGBSurfaceFrom(neo4all_texture_surface, 320, 240, 16, 1024 , 0xF800, 0x7E0, 0x1F, 0);
@@ -149,17 +120,12 @@ SDL_bool init_video_gl(void) {
     glGenTextures(1,(GLuint *)&screen_texture);
     glBindTexture(GL_TEXTURE_2D,screen_texture);
     loadTextureParams();
-#ifdef DREAMCAST
-    glKosFinishFrame();
-#endif
     return SDL_TRUE;
 }
 
 void video_fullscreen_toggle_gl(void)
 {
-#ifndef DREAMCAST
 	SDL_WM_ToggleFullScreen(gl_screen);
-#endif
 
 }
 

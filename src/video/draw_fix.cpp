@@ -50,10 +50,8 @@ void video_draw_fix(void)
 	Uint16 code, colour;
 	Uint16 * fixarea=(Uint16 *)&video_vidram[0xe004];
 
-#ifndef DREAMCAST
 	if(SDL_MUSTLOCK(video_buffer))
 		SDL_LockSurface(video_buffer);
-#endif
 
 	for (y=0; y < 28; y++)
 	{
@@ -69,10 +67,8 @@ void video_draw_fix(void)
 		}
 		fixarea++;
 	}
-#ifndef DREAMCAST
 	if(SDL_MUSTLOCK(video_buffer))
 		SDL_UnlockSurface(video_buffer);
-#endif
 }
 
 
@@ -96,10 +92,8 @@ void fixputs( Uint16 x, Uint16 y, const char * string )
 	
 	if (length<0) return;
 
-#ifndef DREAMCAST
 	if(SDL_MUSTLOCK(video_buffer))
 		SDL_LockSurface(video_buffer);
-#endif
 	
 	y<<=3;
 		
@@ -108,10 +102,8 @@ void fixputs( Uint16 x, Uint16 y, const char * string )
 	}
 	
 	
-#ifndef DREAMCAST
 	if(SDL_MUSTLOCK(video_buffer))
 		SDL_UnlockSurface(video_buffer);
-#endif
 
 	return;
 }

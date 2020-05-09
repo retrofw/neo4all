@@ -1163,10 +1163,6 @@ void neogeo_cdrom_load_title(void)
     	spr_conv((unsigned char *)neogeo_cdrom_buffer, (unsigned char *)Ptr, Readed, (unsigned char *)video_spr_usage);
     	cdrom_fclose(fp);
 
-#if defined(DREAMCAST) && defined(USE_VIDEO_GL)
-    	glKosBeginFrame();
-    	glKosFinishList();
-#endif
 
     	Readed = 0;
     	for(y=0;y<80;y+=16)

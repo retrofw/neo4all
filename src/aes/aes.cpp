@@ -16,54 +16,6 @@ unsigned char aes4all_pen_usage[0x10000];
 unsigned *aes4all_prefetch_bufffer=NULL;
 void *aes4all_prealloc=NULL;
 
-#ifdef DREAMCAST
-#include "mmu_file/mmu_file.h"
-
-void prefetchme_without_buffer(FILE *f)
-{
-	int msize=-1;
-	int backpos=ftell(f);
-	fseek(f,0,SEEK_END);
-	msize=ftell(f)-(256*1024);
-	if (msize>(256*1024))
-	{
-		int i,max=(AES4ALL_TOTAL_MEMORY-(512*1024))/4096,max_pags=msize/4096;
-		memset(aes4all_prefetch_bufffer,0,4*32768);
-		if (max>max_pags)
-			max=max_pags;
-		for(i=0;i<max;i++)
-			aes4all_prefetch_bufffer[i]=33;
-		if (!mmu_file_direct_fetch((unsigned)aes4all_mmu,(unsigned *)aes4all_prefetch_bufffer,text_draw_loading,aes4all_filename,256*1024))
-			mmu_handle_prefetch_by_array((unsigned)aes4all_mmu,(unsigned *)aes4all_prefetch_bufffer,text_draw_loading);
-	}
-	fseek(f,backpos,SEEK_SET);
-}
-
-void prefetchme_with_buffer(void)
-{
-	int n=strlen(aes4all_filename);
-	char back_c3='a', back_c2='e', back_c1='s';
-	if (n>3)
-	{
-		back_c3=aes4all_filename[n-3];
-		back_c2=aes4all_filename[n-1];
-		back_c1=aes4all_filename[n-1];
-		aes4all_filename[n-3]='p';
-		aes4all_filename[n-2]='r';
-		aes4all_filename[n-1]='f';
-	}
-	if ((n<=3)||(!mmu_file_direct_fetch((unsigned)aes4all_mmu,(unsigned *)aes4all_prefetch_bufffer,text_draw_loading,aes4all_filename,0))||(n<=3))
-		mmu_handle_prefetch_by_array((unsigned)aes4all_mmu,(unsigned *)aes4all_prefetch_bufffer,text_draw_loading);
-	if (n>3)
-	{
-		aes4all_filename[n-3]=back_c3;
-		aes4all_filename[n-2]=back_c2;
-		aes4all_filename[n-1]=back_c1;
-	}
-}
-
-
-#endif
 
 static void load_pen_usage(FILE *f, unsigned size)
 {
@@ -112,11 +64,6 @@ int aes4all_prefetch_all(void)
 	if (!nc)
 		return 1;
 #endif
-#ifdef DREAMCAST
-	strcat(aes4all_actual_dir,"/");
-	strcat(aes4all_actual_dir,aes4all_filename);
-	aes4all_filename=(char *)&aes4all_actual_dir[0];
-#endif
 	f=fopen(aes4all_filename,"rb");
 	if (!f)
 	{
@@ -127,28 +74,6 @@ int aes4all_prefetch_all(void)
 
 	console_puts("Prefetching ROM...");
 	neogeo_emulating=0;
-#ifdef DREAMCAST
-	mmu_handle_reset();
-
-#ifndef AES_PREFETCHING
-	memset(aes4all_prefetch_bufffer,0,4*32768);
-	fseek(f,aes4all_prefetch_init,SEEK_SET);
-	unsigned lastpos=fread(aes4all_prefetch_bufffer,4,32767,f);
-	aes4all_prefetch_bufffer[lastpos]=0xFFFFFFFF;
-
-	if ((unsigned)aes4all_mmu>0x80000000)
-		mmu_handle_prefetch_all(text_draw_loading);
-	else
-	if (aes4all_prefetch_bufffer[0]==0xFFFFFFFF)
-		prefetchme_without_buffer(f);
-	else
-		prefetchme_with_buffer();
-
-#else
-	mmu_handle_disable_slice(1);
-#endif
-
-#else
 	text_draw_loading(1,12);
 #ifndef USE_MMAP
 	fseek(f,aes4all_memory_cpu_init,SEEK_SET);
@@ -275,7 +200,6 @@ int aes4all_prefetch_all(void)
 	aes4all_mmap_prefetch(aes4all_memory_fix_game_usage_init,aes4all_memory_fix_game_usage_size,f);
 #endif
 
-#endif
 #ifdef DEBUG_MMAP_PREFETCH
 	puts("PEN_USAGE");fflush(stdout);
 #endif

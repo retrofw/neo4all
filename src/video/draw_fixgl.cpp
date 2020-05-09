@@ -11,15 +11,6 @@
 
 // #ifndef AES
 
-#ifdef DREAMCAST
-#ifdef __cplusplus
-extern "C" {
-#endif
-void draw_font(unsigned short *br, unsigned short *paldata, unsigned *gfxdata);
-#ifdef __cplusplus
-}
-#endif
-#else
 static __inline__ void draw_font(unsigned short *br, unsigned short *paldata, unsigned *gfxdata)
 {
     int y;
@@ -38,7 +29,6 @@ static __inline__ void draw_font(unsigned short *br, unsigned short *paldata, un
 	gfxdata++;
     }
 }
-#endif
 
 static __inline__ void create_font(unsigned int tileno,int color,unsigned short *_br)
 {
@@ -58,50 +48,11 @@ static __inline__ void create_font(unsigned int tileno,int color,unsigned short 
 
     draw_font(br,paldata,gfxdata);
 
-#ifdef DREAMCAST
-#ifdef USE_DMA
-    dcache_flush_range(neo4all_texture_buffer,8*8*2);
-    while (!pvr_dma_ready());
-    pvr_txr_load_dma(neo4all_texture_buffer,_br,8*8*2,-1,NULL,NULL);
-#else
-#ifdef USE_SQ
-    pvr_txr_load(neo4all_texture_buffer,_br,8*8*2);
-#endif
-#endif
-#else
 #if defined(USE_SQ) || defined(USE_DMA)
     memcpy(_br,neo4all_texture_buffer,8*8*2);
 #endif
-#endif
 }
 
-#ifdef DREAMCAST
-extern pvr_poly_cxt_t gl_poly_cxt;
-static pvr_poly_hdr_t polyhdr;
-static pvr_dr_state_t  dr_state;
-
-static __inline__ void prepare_pvr_init(void)
-{
-	gl_poly_cxt.txr.filter= neo4all_filter;
-	gl_poly_cxt.gen.alpha = PVR_ALPHA_DISABLE;
-	gl_poly_cxt.txr.alpha = PVR_TXRALPHA_ENABLE;
-	gl_poly_cxt.blend.src = PVR_BLEND_SRCALPHA; //PVR_BLEND_ONE;
-	gl_poly_cxt.blend.dst = PVR_BLEND_INVSRCALPHA; //PVR_BLEND_ZERO;
-	gl_poly_cxt.gen.culling = PVR_CULLING_NONE;
-	gl_poly_cxt.txr.width = 8;
-	gl_poly_cxt.txr.height = 8;
-	gl_poly_cxt.txr.format = GL_ARGB1555;
-}
-
-static __inline__ void prepare_pvr_per_font(void *texture_mem)
-{
-	gl_poly_cxt.txr.base = texture_mem;
-	pvr_poly_compile(&polyhdr, &gl_poly_cxt);
-	pvr_prim(&polyhdr, sizeof(pvr_poly_hdr_t));
-	pvr_dr_init(dr_state);
-}
-
-#endif
 
 //---------------------------------------------------------------------------- 
 void   video_draw_font(unsigned int code, unsigned int color, int sx, int sy)
@@ -176,9 +127,6 @@ void video_draw_font_textures(void)
 
    unsigned i,j;
 
-#ifdef DREAMCAST
-   prepare_pvr_init();
-#endif
    for(i=n_tile_list,j=0;j<n_font_list;i++,j++)
    {
 	register void *font_buffer=tile_list[i].buffer;
@@ -187,23 +135,17 @@ void video_draw_font_textures(void)
 	register int zx=8;
 	register int zy=8;
 
-#ifndef DREAMCAST
 //	glBindTexture(GL_TEXTURE_2D, tile_opengl_tex[i]);
 	loadTextureParams();
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 8, 8, 0, 
 		GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, font_buffer);
 	glBegin(GL_QUADS);
-#else
-	prepare_pvr_per_font(font_buffer);
-#endif
 #ifndef AES
 	VERTICE_FLIP_NONE
 #else
 	VERTICE_FLIP_X
 #endif
-#ifndef DREAMCAST
 	glEnd();
-#endif
 	tile_z+=TILE_Z_INC;
    }
 
@@ -234,12 +176,8 @@ void video_draw_font_textures_gl(void)
 	register int zy=8;
 	glBindTexture(GL_TEXTURE_2D, screen_texture); //tile_opengl_tex[i]);
 	loadTextureParams();
-#ifndef DREAMCAST
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 8, 8, 0, 
 		GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, font_buffer);
-#else
-	glKosTex2D(GL_ARGB1555,512,512,font_buffer);
-#endif
 	glBegin(GL_QUADS);
 	GL_VERTICE_FLIP_NONE
 	glEnd();

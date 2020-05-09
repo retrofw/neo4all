@@ -11,12 +11,7 @@
 
 #define MENU_FILE_LOADING DATA_PREFIX "loading.png"
 
-#ifdef DREAMCAST
-//#define MENU_DIR_DEFAULT "/cd"
-#define MENU_DIR_DEFAULT "/"
-#else
 #define MENU_DIR_DEFAULT "."
-#endif
 
 void text_draw_background();
 void quit_text(void);

@@ -66,9 +66,6 @@ static Mix_Chunk *sample[NUM_SAMPLES];
 
 #endif
 
-#ifdef DREAMCAST
-#include <SDL_dreamcast.h>
-#endif
 
 unsigned sound_emulating=0;
 
@@ -80,11 +77,7 @@ void update_sdl_stream(void *userdata, Uint8 * stream, int len)
     {
 	neo4all_prof_start(NEO4ALL_PROFILER_SOUND);
     	streamupdate(len);
-#ifndef DREAMCAST
     	memcpy(stream, (Uint8 *) play_buffer, len);
-#else
-	SDL_DC_SetSoundBuffer(play_buffer);
-#endif
 	neo4all_prof_end(NEO4ALL_PROFILER_SOUND);
     }
 #endif

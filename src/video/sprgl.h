@@ -12,13 +12,8 @@
 #define COORD_D_V 1.0
 
 
-#ifndef DREAMCAST
 #define SCALE_X (1.0f/(640.0f/VIDEO_GL_WIDTH))
 #define MOVE_X (8.0f/(640.0f/VIDEO_GL_WIDTH))
-#else
-#define SCALE_X (2.0f/(640.0f/VIDEO_GL_WIDTH))
-#define MOVE_X (16.0f/(640.0f/VIDEO_GL_WIDTH))
-#endif
 #define SCALE_Y SCALE_X
 #define MOVE_Y MOVE_X
 
@@ -63,73 +58,12 @@
 
 
 
-#ifndef DREAMCAST
 #define VERTICE_INIT GL_VERTICE_INIT
 #define VERTICE_INIT_EOL GL_VERTICE_INIT_EOL
 #define _VERTICE_FLIP_XY GL_VERTICE_FLIP_XY 
 #define _VERTICE_FLIP_X GL_VERTICE_FLIP_X 
 #define _VERTICE_FLIP_Y GL_VERTICE_FLIP_Y 
 #define _VERTICE_FLIP_NONE GL_VERTICE_FLIP_NONE 
-#else
-
-
-#define VERTICE_INIT \
-	{ \
-		pvr_vertex_t  *vert=pvr_dr_target(dr_state); \
-		vert->argb = 0xffffffff; \
-		vert->oargb = 0xff000000; \
-		vert->flags = PVR_CMD_VERTEX;
-
-#define VERTICE_INIT_EOL \
-	{ \
-		pvr_vertex_t  *vert=pvr_dr_target(dr_state); \
-		vert->argb = 0xffffffff; \
-		vert->oargb = 0xff000000; \
-		vert->flags = PVR_CMD_VERTEX_EOL; 
-
-#define VERTICE_BODY(X,Y,U,V) \
-		vert->x =X; \
-		vert->y =Y; \
-		vert->z =(float)tile_z; \
-		vert->u =U; \
-		vert->v =V; \
-		pvr_dr_commit(vert); \
-	}
-
-
-#define VERTICE(U,V,X,Y) \
-		VERTICE_INIT \
-		VERTICE_BODY((float)X,(float)Y,(float)U,(float)V)
-
-#define VERTICE_EOL(U,V,X,Y) \
-		VERTICE_INIT_EOL \
-		VERTICE_BODY((float)X,(float)Y,(float)U,(float)V)
-
-#define _VERTICE_FLIP_XY \
-   VERTICE(COORD_B_U,COORD_B_V,VERTEX_4_X,VERTEX_4_Y) \
-   VERTICE(COORD_A_U,COORD_A_V,VERTEX_3_X,VERTEX_3_Y) \
-   VERTICE(COORD_C_U,COORD_C_V,VERTEX_1_X,VERTEX_1_Y) \
-   VERTICE_EOL(COORD_D_U,COORD_D_V,VERTEX_2_X,VERTEX_2_Y)
-
-#define _VERTICE_FLIP_X \
-   VERTICE(COORD_B_U,COORD_B_V,VERTEX_1_X,VERTEX_1_Y) \
-   VERTICE(COORD_A_U,COORD_A_V,VERTEX_2_X,VERTEX_2_Y) \
-   VERTICE(COORD_C_U,COORD_C_V,VERTEX_4_X,VERTEX_4_Y) \
-   VERTICE_EOL(COORD_D_U,COORD_D_V,VERTEX_3_X,VERTEX_3_Y)
-
-#define _VERTICE_FLIP_Y \
-   VERTICE(COORD_A_U,COORD_A_V,VERTEX_4_X,VERTEX_4_Y) \
-   VERTICE(COORD_B_U,COORD_B_V,VERTEX_3_X,VERTEX_3_Y) \
-   VERTICE(COORD_D_U,COORD_D_V,VERTEX_1_X,VERTEX_1_Y) \
-   VERTICE_EOL(COORD_C_U,COORD_C_V,VERTEX_2_X,VERTEX_2_Y)
-
-#define _VERTICE_FLIP_NONE \
-   VERTICE(COORD_A_U,COORD_A_V,VERTEX_1_X,VERTEX_1_Y) \
-   VERTICE(COORD_B_U,COORD_B_V,VERTEX_2_X,VERTEX_2_Y) \
-   VERTICE(COORD_D_U,COORD_D_V,VERTEX_4_X,VERTEX_4_Y) \
-   VERTICE_EOL(COORD_C_U,COORD_C_V,VERTEX_3_X,VERTEX_3_Y)
-
-#endif
 
 #ifndef AES
 #define VERTICE_FLIP_NONE _VERTICE_FLIP_NONE

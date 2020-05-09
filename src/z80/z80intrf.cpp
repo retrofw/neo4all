@@ -42,9 +42,6 @@ static void _fast_memcpy(void *OUT, const void *IN, size_t N)
 	register unsigned *s=(unsigned *)IN;
 	register unsigned n=N;
 	while(n--){
-#ifdef DREAMCAST
-		asm("pref @%0" : : "r" (s + 8));
-#endif
 		*d++=*s++;
 		*d++=*s++;
 		*d++=*s++;

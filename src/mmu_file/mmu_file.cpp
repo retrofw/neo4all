@@ -92,29 +92,7 @@ static unsigned mmu_file_initted=0;
 static void *mmu_file_memprefetch=NULL;
 
 
-#if defined(MMU_FILE_SOUND_PATCH) && defined(DREAMCAST)
-
-
-static void mmu_file_sound_silence(void)
-{
-	register uint32 *dat  =  (uint32*)SDL_DC_SPU_RAM_BASE;
-	register unsigned size = MMU_FILE_SOUND_PATCH >> 5;
-	while(size--)
-	{
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-		*((vuint32*)dat++) = 0;
-	}
-}
-
-#else
 #define mmu_file_sound_silence()
-#endif
 
 
 static void mmu_file_real_handler_file(unsigned n, void *mem, unsigned start, unsigned size)
@@ -192,48 +170,12 @@ static void mmu_file_real_handler(unsigned n, void *mem, unsigned start, unsigne
 		mmu_file_real_handler_file(n,ret,start,size);
 	}
 
-#ifndef DREAMCAST
 	memcpy(mem,ret,size);
-#else
-	{
-		register unsigned *d=(unsigned *)mem;
-		register unsigned *s=(unsigned *)ret;
-		register unsigned n=size>>5;
-		while(n--){
-			asm("pref @%0" : : "r" (s + 8));
-			*d++=*s++;
-			*d++=*s++;
-			*d++=*s++;
-			*d++=*s++;
-			*d++=*s++;
-			*d++=*s++;
-			*d++=*s++;
-			*d++=*s++;
-		}
-	}
-#endif
 }
 
 static void mmu_file_prefetch_handler(void *mem, unsigned start, unsigned size)
 {
-#ifdef DREAMCAST
-	register unsigned *d=(unsigned *)mem;
-	register unsigned *s=(unsigned *)mmu_file_memprefetch;
-	register unsigned n=size>>5;
-	while(n--){
-		asm("pref @%0" : : "r" (s + 8));
-		*d++=*s++;
-		*d++=*s++;
-		*d++=*s++;
-		*d++=*s++;
-		*d++=*s++;
-		*d++=*s++;
-		*d++=*s++;
-		*d++=*s++;
-	}
-#else
 	memcpy((void *)mem,(void *)mmu_file_memprefetch,size);
-#endif
 }
 
 
@@ -381,9 +323,7 @@ void mmu_file_restart(void)
 		for(i=0;i<MMU_FILE_MAX_FILES;i++)
 			if (mmu_file_fhandle[i])
 			{
-#ifndef DREAMCAST
 				free(mmu_file_buffer[i]);
-#endif
 #ifdef MMU_FILE_LOW_LEVEL
 				__kos__iso_close(mmu_file_fhandle[i]);
 #else
@@ -440,11 +380,7 @@ void *mmu_file_add(char *filename, unsigned max_real, unsigned offset)
 #else
 		mmu_file_fhandle[mmu_file_nfiles]=fopen(filename,"rb");
 #endif
-#ifndef DREAMCAST
 		mmu_file_buffer[mmu_file_nfiles]=malloc(SDL_DC_SPU_RAM_BLOCK);
-#else
-		mmu_file_buffer[mmu_file_nfiles]=(void *)(SDL_DC_SPU_RAM_START+(SDL_DC_SPU_RAM_BLOCK*mmu_file_nfiles));
-#endif
 		memset((void *)&mmu_file_used[mmu_file_nfiles][0],0,SDL_DC_SPU_RAM_SLOTS*sizeof(unsigned));
 		memset((void *)&mmu_file_cache[mmu_file_nfiles][0],-1,SDL_DC_SPU_RAM_SLOTS*sizeof(unsigned));
 		if (mmu_file_fhandle[mmu_file_nfiles])

@@ -295,13 +295,9 @@ void console_draw_line(char *str)
 	if (y>=y_max)
 	{
 		y=y_max-1;
-#ifndef DREAMCAST
 		SDL_LockSurface(screen);
-#endif
 		memcpy(screen->pixels,screen->pixels+(screen->pitch*background[0]->h),screen->pitch*(screen->h-background[0]->h));
-#ifndef DREAMCAST
 		SDL_UnlockSurface(screen);
-#endif
 //		SDL_UpdateRect(screen,0,0,screen->w,screen->h-background[0]->h);
 		console_offset++;
 	}
@@ -342,11 +338,6 @@ void console_puts(char *str_orig)
 		if (len>0)
 			console_draw_line(str);
 		video_flip(screen);
-#ifndef DREAMCAST
-		SDL_Delay(20);
-#else
-		SDL_Delay(10);
-#endif
 		video_flip(screen);
 	}
 }

@@ -12,9 +12,6 @@
 
 extern int menu_moving;
 
-#ifdef DREAMCAST
-#include <SDL_dreamcast.h>
-#endif
 
 #ifdef INPUT_INLINE
 #define INPUT_STATIC_INLINE static __inline__
@@ -27,13 +24,8 @@ extern int menu_moving;
 #define NUMAXES         2
 #define AXISMIN         0
 
-#ifndef DREAMCAST
 #define AXISMAX         65536
 #define NUMJOYBUTTONS   10
-#else
-#define AXISMAX         256
-#define NUMJOYBUTTONS   1
-#endif
 
 #define AXISCENTRE      AXISMAX / 2
 #define AXISTHRESHOLD   AXISCENTRE / 2   /* 2% joystick threshold */
@@ -234,9 +226,7 @@ void input_init(void) {
     keyup[SDLK_F3]    = SPECIAL;
     keyup[SDLK_F4]    = SPECIAL;
     keyup[SDLK_F12]   = SPECIAL;
-#ifndef DREAMCAST
     keyup[SDLK_ESCAPE]= SPECIAL;
-#endif
     keyup[SDLK_BACKSPACE]= SPECIAL;
 
     input_reinit_aes_system();
@@ -304,10 +294,6 @@ void input_init(void) {
         }
 */
     }
-#ifdef DREAMCAST
-    SDL_DC_EmulateKeyboard(SDL_TRUE);
-    SDL_DC_EmulateMouse(SDL_FALSE);
-#endif
 
     input_reset();
     input_initted=1;
@@ -440,10 +426,8 @@ static void update_coin(void)
 	f++;
 }
 
-#if !defined(DREAMCAST) || defined(AES)
 INPUT_STATIC_INLINE void specialKey (SDLKey key) {
     switch(key) {
-#ifndef DREAMCAST
 	case SDLK_F10:
 	case SDLK_BACKSPACE:
 		pulsando_menu=1;
@@ -459,25 +443,15 @@ INPUT_STATIC_INLINE void specialKey (SDLKey key) {
 	case SDLK_TAB: insert_coin(0); break;
 	case SDLK_ESCAPE: pulsando_escape=1; break;
 #endif
-#else
-	case SDLK_TAB: insert_coin(0); break;
-	case SDLK_1: insert_coin(1); break;
-#endif
         default:
 		pulsando_menu=0;
     }
 }
-#endif
-
 
 INPUT_STATIC_INLINE void keyDown (SDLKey key) {
-#if !defined(DREAMCAST) || defined(AES)
     if(keyup[key]&SPECIAL) {
         specialKey(key);
     } else {
-#else
-    if(!(keyup[key]&SPECIAL)) {
-#endif
 	pulsando_menu=0;
 #ifdef DINGOO
 	if (pulsando_escape) {
@@ -512,20 +486,17 @@ INPUT_STATIC_INLINE void keyUp (SDLKey key) {
     pulsando_menu=0;
 }
 
-#ifndef DREAMCAST
 INPUT_STATIC_INLINE void joyDown (int which, int button) {
     if (which<NUMJOYSTICKS && button<NUMJOYBUTTONS) {
         keys &= joydown[which][button];
     }
 }
 
-
 INPUT_STATIC_INLINE void joyUp (int which, int button) {
     if (which<NUMJOYSTICKS && button<NUMJOYBUTTONS) {
         keys |= joyup[which][button];
     }
 }
-#endif
 
 
 INPUT_STATIC_INLINE void joyMotion (int which, int axis, int value) {
@@ -546,20 +517,9 @@ void processEvents(void) {
         switch(event.type) {
             case SDL_KEYDOWN: keyDown(event.key.keysym.sym); break;
             case SDL_KEYUP:   keyUp(event.key.keysym.sym); break;
-#ifndef DREAMCAST
             case SDL_JOYBUTTONDOWN: joyDown(event.jbutton.which, event.jbutton.button); break;
             case SDL_JOYBUTTONUP:   joyUp(event.jbutton.which, event.jbutton.button); break;
-#endif
             case SDL_JOYAXISMOTION: joyMotion(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
-#ifdef DREAMCAST
-				    if (event.jaxis.axis==3)
-				    {
-					    if (event.jaxis.value>200)
-						    pulsando_menu=1;
-					    else
-						    pulsando_menu=0;
-				    }
-#endif
 				    break;
             case SDL_QUIT:    exit(0); break;
 

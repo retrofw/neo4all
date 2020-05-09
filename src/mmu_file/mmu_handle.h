@@ -1,10 +1,6 @@
-#ifdef DREAMCAST
-#include <kos.h>
-#else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 
 #if !defined(PAGESIZE) || !defined(PAGESIZE_BITS)
 #undef PAGESIZE

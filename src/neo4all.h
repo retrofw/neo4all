@@ -7,9 +7,6 @@
 #ifndef NEOCD_H
 #define NEOCD_H
 
-#ifdef DREAMCAST
-#include <kos.h>
-#endif
 
 #ifdef WIN32
 #define bzero(BUF,SIZE) memset(BUF,0,SIZE)
@@ -134,25 +131,13 @@ extern unsigned long long neo4all_prof_executed[NEO4ALL_PROFILER_MAX];
 static __inline__ void neo4all_prof_start(unsigned a)
 {
 	neo4all_prof_executed[a]++;
-#ifndef DREAMCAST
 	neo4all_prof_initial[a]=SDL_GetTicks();
-#else
-	neo4all_prof_initial[a]=timer_us_gettime64();
-#endif
 }
 
 
 static __inline__ void neo4all_prof_end(unsigned a)
 {
-#ifndef DREAMCAST
 	neo4all_prof_sum[a]+=SDL_GetTicks()-neo4all_prof_initial[a];
-#else
-	extern unsigned neo4all_prof_total;
-	unsigned i;
-	for(i=0;i<neo4all_prof_total;i++)
-		neo4all_prof_initial[i]+=5; // 6;
-	neo4all_prof_sum[a]+=timer_us_gettime64()-neo4all_prof_initial[a]+1; //2;
-#endif
 }
 
 #endif

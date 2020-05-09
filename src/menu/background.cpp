@@ -55,11 +55,6 @@ void init_background(void)
 		sprintf(name,DATA_PREFIX FILE_PREFIX "0_%i.png",i);
 		tmp=IMG_Load(name);
 		if (!tmp) {
-#ifdef DREAMCAST
-			name[1]='s';
-			tmp=IMG_Load(name);
-			if (!tmp)
-#endif
 			break;
 		}
 		sonic_surface[i]=menu_DisplayFormat(tmp);
@@ -76,11 +71,6 @@ void init_background(void)
 		sprintf(name,DATA_PREFIX FILE_PREFIX "1_%i.png",i);
 		tmp=IMG_Load(name);
 		if (!tmp)
-#ifdef DREAMCAST
-			name[1]='s';
-			tmp=IMG_Load(name);
-			if (!tmp)
-#endif
 			break;
 		knuck_surface[i]=menu_DisplayFormat(tmp);
 		SDL_FreeSurface(tmp);

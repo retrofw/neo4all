@@ -1,6 +1,3 @@
-#ifdef DREAMCAST
-#include<kos.h>
-#endif
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -11,18 +8,12 @@
 
 #include "sound/sound.h"
 
-#if defined (DREAMCAST) && defined(AES_PREFETCHING)
-#include "mmu_file/mmu_file.h"
-#endif
 
 #ifdef USE_VIDEO_GL
 #include "video/videogl.h"
 #endif
 
 
-#ifdef DREAMCAST
-#include <SDL_dreamcast.h>
-#endif
 
 #ifndef AES
 static char *text_str_title="NEO4ALL RC-4";
@@ -58,11 +49,7 @@ static char *text_str_reset="Reset";
 static char *text_str_reset="Select Game";
 #endif
 static char *text_str_run="Run";
-#ifdef DREAMCAST
-static char *text_str_exit= "Reboot";
-#else
 static char *text_str_exit="Exit";
-#endif
 
 int mainMenu_filter=0;
 int mainMenu_case=-1;
@@ -82,31 +69,6 @@ static int	cdda_disabled=1;
 enum { MAIN_MENU_CASE_REBOOT, MAIN_MENU_CASE_LOAD, MAIN_MENU_CASE_RUN, MAIN_MENU_CASE_RESET, MAIN_MENU_CASE_CANCEL, MAIN_MENU_CASE_CPU, MAIN_MENU_CASE_CONTROL };
 
 
-#if defined(DREAMCAST) && !defined(AES)
-#include<dirent.h>
-static int list_files(void)
-{
-	int found=0;
-	DIR *d=opendir("/cd");
-	unsigned i;
-	while(d!=NULL && !found)
-	{
-		struct dirent *actual=readdir(d);
-		if (actual==NULL)
-			break;
-		found++;
-	}
-	closedir(d);
-	return found;
-}
-static int try_to_list_files(void)
-{
-	int rt;
-	for(rt=0;(rt<20)&&(!list_files());rt++)
-		SDL_Delay(500);
-	return list_files();
-}
-#endif
 
 static inline void draw_mainMenu(int c)
 {
@@ -567,9 +529,6 @@ int run_mainMenu()
 	static int c=8;
 	int end,need_reset=-1;
 	mainMenu_case=-1;
-#ifdef DREAMCAST
-	SDL_DC_VerticalWait(SDL_FALSE);
-#endif
 	sound_play_menu();
 	while(mainMenu_case<0)
 	{
@@ -609,14 +568,6 @@ int run_mainMenu()
 						break;
 					}
 #else
-#if defined(DREAMCAST) && !defined(AES)
-				if (!try_to_list_files())
-				{
-					mainMenu_case=-1;
-					drawNoCD();
-					break;
-				}
-#endif
 				mainMenu_case=1;
 #endif
 				neogeo_adjust_frameskip(neogeo_frameskip);
@@ -641,14 +592,6 @@ int run_mainMenu()
 					need_reset=run_menuLoad();
 				mainMenu_case=-1;
 #else
-#if defined(DREAMCAST) && !defined(AES)
-				if (!try_to_list_files())
-				{
-					mainMenu_case=-1;
-					drawNoCD();
-					break;
-				}
-#endif
 				neogeo_adjust_frameskip(neogeo_frameskip);
 				neogeo_adjust_cycles(menuCPU_68k, menuCPU_z80);
 				if (neogeo_emulating)
@@ -658,18 +601,11 @@ int run_mainMenu()
 #endif
 				break;
 			case MAIN_MENU_CASE_REBOOT:
-#if defined (DREAMCAST) && defined(AES_PREFETCHING)
-				mmu_handle_dump_memaccess();
-#endif
 				sound_play_bye();
 				menu_unraise();
 				SDL_Delay(333);
 				SDL_Quit();
-#if defined(DREAMCAST) && defined(REBOOT_DREAMCAST)
-				arch_reboot();
-#else
 				exit(0);
-#endif
 				break;
 			default:
 				mainMenu_case=-1;
@@ -682,9 +618,6 @@ int run_mainMenu()
 	text_flip();
 */
 
-#ifdef DREAMCAST
-//	__sdl_dc_wait_vblank=mainMenu_vsync;
-#endif
 	menu_moving=0;
 	text_draw_background();
 	return mainMenu_case;

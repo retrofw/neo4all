@@ -817,11 +817,7 @@ long CDR_open(void) {
 			time[0] = itob(0); time[1] = itob(2); time[2] = itob(0x10);
 			READTRACK();
 			dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156];
-#ifndef DREAMCAST
 			unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
-#else
-			unsigned long long ulldirlen=CONV64w((void *)&dir->size[0]);
-#endif
 			unsigned dirlen=(unsigned)ulldirlen;
 			if (dirlen>MAXDIRLEN) dirlen=MAXDIRLEN;
 			mmssdd(dir->extent, (char*)time);
@@ -1072,11 +1068,7 @@ static int GetCdromFile(unsigned char *mdir, unsigned char *time, const char *fi
 
 				filename += dir->name_len[0] + 1;
 
-#ifndef DREAMCAST
 				unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
-#else
-				unsigned long long ulldirlen=CONV64w((void *)&dir->size[0]);
-#endif
 				unsigned dirlen=(unsigned)ulldirlen;
 				if (dirlen>MAXDIRLEN) dirlen=MAXDIRLEN;
 				mmssdd(dir->extent, (char *)time);
@@ -1086,11 +1078,7 @@ static int GetCdromFile(unsigned char *mdir, unsigned char *time, const char *fi
 			}
 		} else {
 			if (!strncasecmp((char *)&dir->name[0], filename, strlen(filename))) {
-#ifndef DREAMCAST
 				unsigned long long len=*((unsigned long long *)(&dir->size[0]));
-#else
-				unsigned long long len=CONV64w((void *)&dir->size[0]);
-#endif
 				mmssdd(dir->extent, (char *)time);
 				return (unsigned)(len&0xFFFFFFFFULL);
 				break;
@@ -1114,11 +1102,7 @@ int CDR_LoadCdromFile(const char *filename, unsigned char *addr, unsigned len, u
 	// skip head and sub, and go to the root directory record
 	dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156];
 
-#ifndef DREAMCAST
 	unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
-#else
-	unsigned long long ulldirlen=CONV64w((void *)&dir->size[0]);
-#endif
 	unsigned dirlen=(unsigned)ulldirlen;
 	if (dirlen>MAXDIRLEN) dirlen=MAXDIRLEN;
 	mmssdd(dir->extent, (char*)time);
@@ -1169,11 +1153,7 @@ void *CDR_fopen(const char *filename, const char *filemode) {
 	// skip head and sub, and go to the root directory record
 	dir = (struct iso_directory_record *)&buf[CD_FRAMESIZE_PAD + 156];
 
-#ifndef DREAMCAST
 	unsigned long long ulldirlen=*((unsigned long long *)(&dir->size[0]));
-#else
-	unsigned long long ulldirlen=CONV64w((void *)&dir->size[0]);
-#endif
 	unsigned dirlen=(unsigned)ulldirlen;
 	if (dirlen>MAXDIRLEN) dirlen=MAXDIRLEN;
 	mmssdd(dir->extent, (char*)time);

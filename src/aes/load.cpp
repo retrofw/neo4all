@@ -2,25 +2,19 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined(USE_MMAP) && !defined(DREAMCAST)
+#if defined(USE_MMAP)
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 void *aes4all_mmap;
 #endif
 
-#ifdef DREAMCAST
-#include "mmu_file.h"
-#endif
 
 #include "neo4all.h"
 #include "video/video.h"
 #include "video/console.h"
 #include "aes.h"
 
-#ifdef DREAMCAST
-void *aes4all_mmu;
-#endif
 
 extern char aes4all_actual_dir[128];
 char neo4all_image_file[64];
@@ -211,7 +205,7 @@ static int load_aes(char *filename)
 	return ret;
 }
 
-#if defined(USE_MMAP) && !defined(DREAMCAST)
+#if defined(USE_MMAP)
 int aes4all_mmap_prefetch(unsigned mem_init, unsigned mem_size, FILE *f)
 {
 	int i,ret=0;
@@ -248,11 +242,6 @@ int aes4all_load(void)
 	if (!nc)
 		return 0;
 #endif
-#ifdef DREAMCAST
-	strcat(aes4all_actual_dir,"/");
-	strcat(aes4all_actual_dir,aes4all_filename);
-	aes4all_filename=(char *)&aes4all_actual_dir[0];
-#endif
 	if (load_aes(aes4all_filename))
 	{
 		aes4all_actual_dir[nc]=0;
@@ -265,19 +254,10 @@ int aes4all_load(void)
 	console_puts("Preloading OK.");
 	aes4all_nvram_lock=0;
 	aes4all_bankaddress=0;
-#ifdef DREAMCAST
-	if (aes4all_prealloc)
-	{
-		free(aes4all_prealloc);
-		aes4all_prealloc=NULL;
-	}
-	mmu_file_restart();
-	aes4all_mmu=mmu_file_add(aes4all_filename,AES4ALL_TOTAL_MEMORY,aes4all_memory_cpu_init);
-#endif
 	input_init_aes_system(aes4all_system);
 	aes4all_filename=(char *)&neo4all_image_file[0];
 	aes4all_actual_dir[nc]=0;
-#if defined(USE_MMAP) && !defined(DREAMCAST)
+#if defined(USE_MMAP)
 	static int aes4all_mmap_fd=0;
 	static unsigned aes4all_mmap_size=0;
 	if (aes4all_mmap_fd) {

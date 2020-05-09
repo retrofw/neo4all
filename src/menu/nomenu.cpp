@@ -1,15 +1,10 @@
-#ifdef DREAMCAST
-#include <kos.h>
-#endif
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<SDL.h>
 
-#ifndef DREAMCAST
 #include <unistd.h>
-#endif
 
 #include "neo4all.h"
 #include "fade.h"
@@ -139,11 +134,7 @@ void init_text(int splash)
 	extern char neo4all_image_file[];
 	strcpy(neo4all_image_file,"game.aes");
 #endif
-#ifndef DREAMCAST
 	chdir(autodir);
-#else
-	fs_chdir(autodir);
-#endif
 	neogeo_adjust_filter(0);
 	if (splash)
 	{
@@ -176,10 +167,8 @@ void init_text(int splash)
 				fade16(screen,i);
 
 				video_flip(screen);
-#ifndef DREAMCAST
     				while(SDL_PollEvent(&event)) 
 					exit_now=1;
-#endif
 			}
 
 			SDL_Delay(100);
@@ -201,10 +190,8 @@ void init_text(int splash)
 
 			for(i=0;(i<12)&&(!exit_now);i++)
 			{
-#ifndef DREAMCAST
     				while(SDL_PollEvent(&event)) 
 					exit_now=1;
-#endif
 				SDL_Delay(100);
 			}
 
@@ -236,15 +223,11 @@ void text_draw_loading(int per, int max)
 	r.w=(Uint16)((((288.0)*((double)per))/((double)max)));
 	SDL_FillRect(screen,&r,(unsigned)-1);
 
-#ifndef DREAMCAST
 	if (!exit_now)
 	{
-#endif
 		video_flip(screen);
-#ifndef DREAMCAST
 		SDL_Delay(50);
 	}
-#endif
 }
 
 void text_draw_saving(int per, int max)

@@ -1,17 +1,3 @@
-#ifdef DREAMCAST
-#include <kos.h>
-#if !defined(AES) && defined(SHOW_MENU)
-extern uint8 romdisk[];
-#endif
-KOS_INIT_FLAGS(INIT_DEFAULT);
-#if !defined(AES) && defined(SHOW_MENU)
-KOS_INIT_ROMDISK(romdisk);
-#else
-#ifdef AES
-#include "mmu_file/mmu_file.h"
-#endif
-#endif
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,9 +7,6 @@ KOS_INIT_ROMDISK(romdisk);
 #include <ctype.h>
 #include <string.h>
 
-#ifdef DREAMCAST
-#include <SDL_dreamcast.h>
-#endif
 
 #include "neo4all.h"
 #include "z80/z80intrf.h"
@@ -85,9 +68,7 @@ unsigned z80_cycles_inited=0;
 
 int	neogeo_accurate=0;
 
-#ifndef DREAMCAST
 static char		neocd_wm_title[255]=VERSION1;
-#endif
 
 unsigned char neogeo_game_vector[0x80];
 //int neogeo_irq2start, neogeo_irq2repeat, neogeo_irq2taken, neogeo_irq2control;
@@ -272,7 +253,6 @@ int neo4all_init_memory(void)
 {
 	console_puts("NEOGEO: Allocating memory...");
 #ifdef AES
-#ifndef DREAMCAST
 #ifndef USE_MMAP
 	static unsigned back_mem=0;
 	unsigned mem;
@@ -280,9 +260,6 @@ int neo4all_init_memory(void)
         mem = back_mem = (unsigned)calloc(aes4all_memory_total,1);
 #else
 	unsigned mem = (unsigned)aes4all_mmap;
-#endif
-#else
-	unsigned mem = (unsigned)aes4all_mmu;
 #endif
 	aes4all_memory = (void *)mem;
 	neogeo_prg_memory = (char *)mem;
@@ -384,10 +361,6 @@ int neo4all_load_bios(void)
 	FILE *fp = fopen(ROM_PREFIX "/neocd.bin", "rb");
 	if (!fp)
 		fp = fopen("neocd.bin", "rb");
-#ifdef DREAMCAST
-	if (fp==NULL)
-		fp = fopen("/sd/neocd.bin","rb");
-#endif
 	if (fp==NULL) {
 #ifdef SHOW_CONSOLE
 		console_println();
@@ -468,11 +441,6 @@ static void profiler_init(void)
 int	main(int argc, char* argv[])
 {
 #ifdef AES
-#ifdef DREAMCAST
-	mmu_file_init();
-	puts("MMU Initted");
-	aes4all_prealloc=malloc(AES4ALL_TOTAL_MEMORY+0x20000);
-#endif
 #ifndef AES_PREFETCHING
 	aes4all_prefetch_bufffer=(unsigned *)malloc(4*32768);
 #endif
@@ -480,10 +448,6 @@ int	main(int argc, char* argv[])
 
 #ifdef STDOUTPUT
 	puts("MAIN!!!");
-#endif
-#ifdef DREAMCAST
-	SDL_DC_Default60Hz(SDL_TRUE);
-	SDL_DC_ShowAskHz(SDL_FALSE);
 #endif
 	// Initialise SDL
 #ifdef DINGUX
@@ -494,10 +458,8 @@ int	main(int argc, char* argv[])
 		console_printf("Could not initialize SDL: %s.\n", SDL_GetError());
 		return -1;
     }
-#ifndef DREAMCAST
 	// Register exit procedure
 	atexit(neogeo_shutdown);
-#endif
 
 	if (!video_init())
 		return -2;
@@ -656,7 +618,7 @@ int	neogeo_hreset(void)
 
 	}
 
-#if !defined(DREAMCAST) && !defined(DINGUX)
+#if !defined(DINGUX)
 	/* update window title with game name */
 	strcat(neocd_wm_title," - ");
 	strcat(neocd_wm_title,(const char *)config_game_name);
@@ -915,9 +877,6 @@ void	neogeo_run(void)
 	/* get time for speed throttle */
 	init_autoframeskip();
 
-#if defined(AES) && defined(DREAMCAST)
-	unsigned now_mmu_frame, current_mmu_frame=mmu_handle_get_frame();
-#endif
 
 	neo4all_prof_start(NEO4ALL_PROFILER_MAIN);
 	// Main loop
@@ -1028,29 +987,12 @@ void	neogeo_run(void)
 		neogeo_cdda_check();
 		cdda_loop_check();
 #else
-#ifdef DREAMCAST
-#ifdef AES_PREFETCHING
-		if (!mmu_handle_get_free_memory())
-		{
-			mmu_handle_dump_memaccess();
-			return;
-		}
-#endif
-		now_mmu_frame=mmu_handle_get_frame();
-		mmu_handle_inc_frame();
-		mmu_handle_flush();
-#endif
 #endif
 
 	// Update keys and Joystick
 		processEvents();
 
 	// Frameskip
-#if defined(AES) && defined(DREAMCAST) && !defined(AES_PREFETCHING)
-		if (now_mmu_frame!=current_mmu_frame)
-			init_autoframeskip();
-		else
-#endif
 		switch(neogeo_frameskip)
 		{
 			case 0:
@@ -1122,9 +1064,6 @@ void	neogeo_run(void)
 		}
 
 		neogeo_frameskip_count++;
-#if defined(AES) && defined(DREAMCAST) && !defined(AES_PREFETCHING)
-		current_mmu_frame=now_mmu_frame+1;
-#endif
 	}
 	// Stop CDDA
 	cdda_stop();

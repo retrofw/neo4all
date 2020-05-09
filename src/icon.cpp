@@ -1,16 +1,10 @@
 #include <stdio.h>
 #include <SDL.h>
 
-#ifndef DREAMCAST
 #include "icon.h"
-#else
-#include <kos.h>
-#include "vmu_icon.h"
-#endif
 
 void show_icon(void)
 {
-#ifndef DREAMCAST
 	SDL_RWops	*iconfp;
 	SDL_Surface *icon;
 
@@ -27,8 +21,5 @@ void show_icon(void)
 	iconfp=SDL_RWFromMem((void*)rawicon, sizeof(rawicon));
 	icon=SDL_LoadBMP_RW(iconfp,0);
 	SDL_WM_SetIcon(icon,NULL);
-#else
-	vmu_set_icon(vmu_icon);
-#endif
 
 }

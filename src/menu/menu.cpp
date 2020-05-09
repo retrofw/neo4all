@@ -1,15 +1,10 @@
-#ifdef DREAMCAST
-#include <kos.h>
-#endif
 
 #ifdef SHOW_MENU
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#ifndef DREAMCAST
 #include <unistd.h>
-#endif
 
 #include <SDL_mixer.h>
 #include <SDL_image.h>
@@ -36,11 +31,7 @@
 #define MENU_FILE_WIN_LEFT 	DATA_PREFIX "win_left.png"
 #define MENU_FILE_WIN_RIGHT 	DATA_PREFIX "win_right.png"
 
-#ifdef DREAMCAST
-#define VIDEO_FLAGS_INIT SDL_HWSURFACE|SDL_FULLSCREEN
-#else
 #define VIDEO_FLAGS_INIT SDL_HWSURFACE
-#endif
 
 #ifdef DOUBLEBUFFER
 #define VIDEO_FLAGS VIDEO_FLAGS_INIT | SDL_DOUBLEBUF
@@ -60,20 +51,11 @@ void write_num(int x, int y, int v);
 int menu_moving=1;
 //Uint32 menu_msg_time=0x12345678;
 
-#ifdef DREAMCAST
-extern int __sdl_dc_emulate_keyboard;
-#endif
 
 static void obten_colores(void)
 {
 	char *filename=DATA_PREFIX "colors.txt";
 	FILE *f=fopen(filename, "rt");
-#ifdef DREAMCAST
-	if (!f) {
-		filename[1]='s';
-		f=fopen(filename, "rt");
-	}
-#endif
 	if (f)
 	{
 		Uint32 r,g,b;
@@ -107,9 +89,7 @@ void menu_raise(void)
 	for(i=64;i>=0;i-=4)
 	{
 		Mix_VolumeMusic(96-(i<<1));
-#ifndef DREAMCAST
 		SDL_Delay(10);
-#endif
 		text_draw_background();
 		fade16(text_screen,i);
 		text_flip();
@@ -122,9 +102,7 @@ void menu_unraise(void)
 	for(i=0;i<=64;i+=4)
 	{
 		Mix_VolumeMusic(96-(i<<1));
-#ifndef DREAMCAST
 		SDL_Delay(10);
-#endif
 		text_draw_background();
 		fade16(text_screen,i);
 		text_flip();
@@ -203,9 +181,7 @@ void text_draw_background()
 
 void text_flip(void)
 {
-#ifndef DREAMCAST
-	SDL_Delay(10);
-#endif
+	SDL_Delay(2);
 #ifdef MENU_ALPHA
 	{
 		unsigned i;
@@ -244,11 +220,6 @@ SDL_Surface *menu_IMG_Load(char *filename)
 	SDL_Surface *ret, *tmp=IMG_Load(filename);
 	if (tmp==NULL)
 	{
-#ifdef DREAMCAST
-		filename[1]='s';
-		tmp=IMG_Load(filename);
-		if (tmp==NULL)
-#endif
 		{
 #ifdef STDOUTPUT
 		printf("Unable to load '%s'\n",filename);
@@ -306,9 +277,6 @@ void init_text(int splash)
 		}
 	}
 
-#ifdef DREAMCAST
-        __sdl_dc_emulate_keyboard=1;
-#endif
 	if (!splash)
 	{
 		menu_raise();
@@ -506,9 +474,7 @@ void write_text_sel(int x, int y, int w, char * str)
 	int i,j,h=14;
 	int x8=(x*8)-4;
 	int y8=(y*8)+1;
-#ifndef DREAMCAST
 	SDL_LockSurface(text_screen);
-#endif
 	if ((y8+h)>text_screen->h)
 		h=text_screen->h-y8;
 	if (y8<text_screen->h)
@@ -527,9 +493,7 @@ void write_text_sel(int x, int y, int w, char * str)
 				buf--;
 		}
 	}
-#ifndef DREAMCAST
 	SDL_UnlockSurface(text_screen);
-#endif
 	write_text_inv(x,y,str);
 }
 
@@ -656,9 +620,7 @@ void text_draw_window(int x, int y, int w, int h, char *title)
 
 	y+=4; h-=16;
 	x+=2; w-=4;
-#ifndef DREAMCAST
 	SDL_LockSurface(text_screen);
-#endif
 	if ((y+h)>text_screen->h)
 		h=text_screen->h-y;
 	if (y<text_screen->h)
@@ -677,9 +639,7 @@ void text_draw_window(int x, int y, int w, int h, char *title)
 				buf--;
 		}
 	}
-#ifndef DREAMCAST
 	SDL_UnlockSurface(text_screen);
-#endif
 
 /*
 	int i,j;

@@ -22,9 +22,6 @@ typedef struct{
 	char d_type;
 }fichero;
 
-#ifdef DREAMCAST
-#define chdir(A) fs_chdir(A)
-#endif
 
 extern char neo4all_image_file[];
 
@@ -39,9 +36,6 @@ char *text_load=NULL;
 #define MAX_FILES_PER_DIR 128
 #define SHOW_MAX_FILES 12
 
-#ifdef DREAMCAST
-#define chdir(A) fs_chdir(A)
-#endif
 
 char aes4all_actual_dir[128];
 
@@ -73,11 +67,7 @@ static void copyCompleteName(char *dest, int n)
 		strcpy(dest,src);
 	else
 	{
-#ifdef DREAMCAST
-		DIR *d=opendir(aes4all_actual_dir);
-#else
 		DIR *d=opendir(".");
-#endif
 		if (d)
 		{
 			int i,indice=0,buscado=src[MAX_FILELEN+1];
@@ -164,20 +154,6 @@ static int getFiles(char *dir)
 	text_flip();
 
 	text_dir_files=(fichero *)calloc(sizeof(fichero),MAX_FILES_PER_DIR);
-#ifdef DREAMCAST
-        if (!strcmp(dir,".."))
-        {
-                int ind;
-                for(ind=strlen(aes4all_actual_dir)-1;ind>0;ind--)
-                        if (aes4all_actual_dir[ind]=='/')
-                        {
-                                aes4all_actual_dir[ind]=0;
-                                break;
-                        }
-                d=opendir(aes4all_actual_dir);
-        }
-        else
-#endif
 	d=opendir(dir);
 	if (d==NULL)
 		return -1;
@@ -204,7 +180,6 @@ static int getFiles(char *dir)
 						indice++;
 			text_dir_files[jjg].d_name[MAX_FILELEN+1]=indice;
 		}
-#ifndef DREAMCAST
 		{
 			struct stat sstat;
 			char *tmp=(char *)calloc(1,strlen(name)+strlen(dir)+16);
@@ -216,9 +191,6 @@ static int getFiles(char *dir)
 					text_dir_files[i].d_type=4;
 			free(tmp);
 		}
-#else
-		text_dir_files[i].d_type=actual->d_type & 4;
-#endif
 #ifdef AES
 		if (!text_dir_files[i].d_type)
 			if (!is_aes_file(dir,name,(char *)&text_dir_files[i].d_name[MAX_FILELEN+2]))
@@ -233,38 +205,7 @@ static int getFiles(char *dir)
 	if (!text_dir_num_files)
 		return -1;
 
-#ifndef DREAMCAST
         chdir(dir);
-#else
-        if (strcmp(dir,MENU_DIR_DEFAULT))
-        {
-                if (strcmp(dir,".."))
-                {
-                        strcat(aes4all_actual_dir,"/");
-                        strcat(aes4all_actual_dir,dir);
-                }
-        }
-        chdir(aes4all_actual_dir);
-
-
-        if (strcmp(aes4all_actual_dir,MENU_DIR_DEFAULT))
-        {
-		strcpy(text_dir_files[i].d_name,"..");
-                text_dir_files[i].d_type=4;
-                if (text_dir_num_files>0)
-                {
-                        char *pptmp=(char *)calloc(1,MAX_DNAME+4);
-                        int tmptype=text_dir_files[0].d_type;
-                        memcpy(pptmp,text_dir_files[0].d_name,MAX_DNAME);
-                        text_dir_files[0].d_type=text_dir_files[text_dir_num_files].d_type;
-                        text_dir_files[text_dir_num_files].d_type=tmptype;
-                        memcpy(text_dir_files[0].d_name,text_dir_files[text_dir_num_files].d_name,MAX_DNAME);
-                        memcpy(text_dir_files[text_dir_num_files].d_name,pptmp,MAX_DNAME);
-                        free(pptmp);
-                }
-                text_dir_num_files++;
-	}
-#endif
 
 	for(i=0;i<text_dir_num_files;i++)
 	{
@@ -462,9 +403,6 @@ static void unraise_loadMenu()
 
 int getDefaultFiles(void)
 {
-#ifdef DREAMCAST
-	strcpy(aes4all_actual_dir,MENU_DIR_DEFAULT);
-#endif
 	return(getFiles(MENU_DIR_DEFAULT));
 }
 
@@ -488,9 +426,7 @@ int run_menuLoad()
 	}
 	unraise_loadMenu();
 
-#ifndef DREAMCAST
 	getcwd(aes4all_actual_dir,128);
-#endif
 
 	return end;
 }
