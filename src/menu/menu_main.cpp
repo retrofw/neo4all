@@ -465,27 +465,33 @@ void drawNoCD(void)
 #ifndef AES
 void drawNoNeoGeoCD(void)
 {
-	int i;
+	SDL_Event event;
 	sound_play_error();
-	for(i=0;i<200;i++)
+	while (true)
 	{
 		text_draw_background();
 		text_draw_window(64,64,160,36,"ERROR");
 		write_text(9,9,"No NeoGeo/CD disk");
 		text_flip();
+
+		SDL_PollEvent(&event);
+		if (event.type == SDL_KEYDOWN) break;
 	}
 }
 
 void drawNoBIOS(void)
 {
-	int i;
+	SDL_Event event;
 	sound_play_error();
-	for(i=0;i<400;i++)
+	while (true)
 	{
 		text_draw_background();
 		text_draw_window(48,64,224,36,"FATAL ERROR");
 		write_text(8,9,"Could not load NEOCD.BIN");
 		text_flip();
+
+		SDL_PollEvent(&event);
+		if (event.type == SDL_KEYDOWN) break;
 	}
 }
 
