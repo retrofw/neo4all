@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <libgen.h> // for dirname
+#include <sys/stat.h> // for mkdir
 
 #include <SDL.h>
 #include <ctype.h>
@@ -61,6 +62,7 @@ int	neogeo_sound_enable=1;
 int	neogeo_sound_enable=1;
 
 extern char neo4all_image_file[];
+char neo4all_image_dir[1024];
 
 static int neogeo_frameskip_count=0;
 
@@ -353,15 +355,40 @@ int neo4all_init_memory(void)
 
 int neo4all_load_bios(void)
 {
+	char file[1024];
+
+	sprintf(file, "%s/.neo4all", getenv("HOME"));
+	mkdir(file, 0777);
+
 #ifdef AES
 // NEOGEO AES
 	aes4all_prefetch_all();
 #else
 // NEOGEO CD
+
 	// Load BIOS
-	FILE *fp = fopen(ROM_PREFIX "/neocd.bin", "rb");
-	if (!fp)
+	FILE *fp;
+	do {
+		sprintf(file, "%s/neocd.bin", neo4all_image_dir);
+		fp = fopen(file, "rb");
+		if (fp) break;
+
+		sprintf(file, "%s", neo4all_image_dir);
+		dirname(file);
+		sprintf(file, "%s/neocd.bin", file);
+		fp = fopen(file, "rb");
+		if (fp) break;
+
+		fp = fopen(ROM_PREFIX "/neocd.bin","rb");
+		if (fp) break;
+
+		sprintf(file, "%s/.neo4all/neocd.bin", getenv("HOME"));
+		if (fp) break;
+
 		fp = fopen("neocd.bin", "rb");
+		if (fp) break;
+	} while(0);
+
 	if (fp==NULL) {
 #ifdef SHOW_CONSOLE
 		console_println();
@@ -441,6 +468,12 @@ static void profiler_init(void)
 //----------------------------------------------------------------------------
 int	main(int argc, char* argv[])
 {
+if (argc > 0) {
+	strncpy(neo4all_image_file,argv[1],1024);
+	sprintf(neo4all_image_dir, "%s", neo4all_image_file);
+	dirname(neo4all_image_dir);
+}
+
 #ifdef AES
 #ifndef AES_PREFETCHING
 	aes4all_prefetch_bufffer=(unsigned *)malloc(4*32768);
@@ -482,10 +515,6 @@ int	main(int argc, char* argv[])
 	_z80_init();
 #endif
 #endif
-
-if (argc > 0) {
-	strncpy(neo4all_image_file,argv[1],1024);
-}
 
 #ifndef AES
 	if (!neo4all_load_bios())
