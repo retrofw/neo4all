@@ -55,6 +55,9 @@ int used_blitter=0;
 
 void _write_text_inv_n(SDL_Surface *sf, int x, int y, int n, char * str);
 
+/*static const*/ SDL_Rect s={ 8, 0, 304, 224 };
+/*static const*/ SDL_Rect d={ 8, 8, 304, 224 };
+
 void blitter(void) {
 #ifdef USE_VIDEO_GL
 	if (!used_blitter)
@@ -72,9 +75,8 @@ void blitter(void) {
 			SDL_FillRect(screen,(SDL_Rect *)&sr, 0);
 		}
 	}
-#ifdef DOUBLE_BUFFER
-	/*static const*/ SDL_Rect s={ 8, 0, 304, 240 };
-	SDL_BlitSurface(video_buffer,(SDL_Rect *)&s,screen,(SDL_Rect *)&s);
+#if 1 // defined(DOUBLE_BUFFER)
+	SDL_BlitSurface(video_buffer, &s, screen, &d);
 #else
 	/*static const*/ SDL_Rect r1={ 0, 0, 8, 240 };
 	/*static const*/ SDL_Rect r2={ 312, 0, 8, 240 };
