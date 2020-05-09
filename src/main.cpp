@@ -905,8 +905,10 @@ void	neogeo_run(void)
 	// If IPL.TXT not loaded, load it !
 #ifndef AES
 	if (!neogeo_ipl_done)
-		while(neogeo_hreset())
+		if (neogeo_hreset()) {
 			drawNoNeoGeoCD();
+			exit(1);
+		}
 #else
 	neogeo_hreset();
 #endif
