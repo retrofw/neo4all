@@ -775,7 +775,6 @@ void	neogeo_shutdown(void)
 void	neogeo_exception(void)
 {
 	console_printf("NEOGEO: Exception Trapped at %08x !\n", previouspc);
-	SDL_Delay(1000);
 	exit(0);
 }
 
@@ -793,7 +792,6 @@ void MC68000_Cause_Interrupt(int level)
 void	neogeo_exit(void)
 {
 	console_puts("NEOGEO: Exit requested by software...");
-	SDL_Delay(1000);
 	exit(0);
 }
 

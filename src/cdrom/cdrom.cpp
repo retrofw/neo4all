@@ -682,7 +682,6 @@ static unsigned neogeo_cdrom_test_files(int check)
     	    if (!check)
         		return 0;
             console_printf("Internal Error loading file: %s",FileName);
-	    SDL_Delay(1000);
             exit(1);
         }
 
@@ -1179,7 +1178,6 @@ void neogeo_cdrom_load_title(void)
     	}
 
     	blitter();
-    	SDL_Delay(1500);
    }
 
     memset(neogeo_spr_memory, 0, 4194304);

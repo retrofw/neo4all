@@ -334,8 +334,6 @@ INPUT_STATIC_INLINE void goMenu(void)
 	sound_disable();
 	cdda_pause();
 	input_reset();
-	SDL_Delay(1111);
-    	while(SDL_PollEvent(&ev)) SDL_Delay(10);
 	do{
 		text_draw_nomenu();
     	}while(!SDL_PollEvent(&ev));
@@ -610,7 +608,6 @@ void input_reset(void)
     SDL_Event event;
 
     keys   =~0;
-    SDL_Delay(133);
     while(SDL_PollEvent(&event))
 	    SDL_Delay(10);
 }
