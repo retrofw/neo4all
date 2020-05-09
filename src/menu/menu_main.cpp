@@ -274,7 +274,7 @@ static inline int key_mainMenu(int *cp)
 			sound_play_beep();
 			switch(event.key.keysym.sym)
 			{
-				case SDLK_ESCAPE: mainMenu_case=MAIN_MENU_CASE_REBOOT; end=-1; break;
+				// case SDLK_ESCAPE: mainMenu_case=MAIN_MENU_CASE_REBOOT; end=-1; break;
 				case SDLK_d:
 				case SDLK_RIGHT: right=1; break;
 				case SDLK_a:
@@ -286,12 +286,10 @@ static inline int key_mainMenu(int *cp)
 				case SDLK_z:
 				case SDLK_RETURN:
 				case SDLK_q:
-				case SDLK_LALT:
 				case SDLK_e:
 				case SDLK_LCTRL: hit0=1; break;
 				case SDLK_1:
-				case SDLK_TAB:
-				case SDLK_BACKSPACE: hit1=1; break;
+				case SDLK_LALT: hit1=1; break;
 			}
 			if (hit1)
 			{

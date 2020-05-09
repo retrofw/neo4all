@@ -297,7 +297,7 @@ void input_init(void) {
 
     input_reset();
     input_initted=1;
-#ifdef DINGOO
+#if defined(DINGOO) && !defined(RETROFW)
     static int yet=0;
     if (!yet) {
 	    show_mhz();
@@ -429,7 +429,8 @@ static void update_coin(void)
 INPUT_STATIC_INLINE void specialKey (SDLKey key) {
     switch(key) {
 	case SDLK_F10:
-	case SDLK_BACKSPACE:
+    case SDLK_END:
+	case SDLK_HOME:
 		pulsando_menu=1;
 		break;
 #ifndef DINGOO
@@ -438,7 +439,7 @@ INPUT_STATIC_INLINE void specialKey (SDLKey key) {
 	case SDLK_F3: insert_coin(1); break;
     case SDLK_F4: sound_toggle(); break;
     case SDLK_F12: video_save_snapshot(); break;
-    case SDLK_ESCAPE: exit(0); break;
+    // case SDLK_ESCAPE: exit(0); break;
 #else
 	case SDLK_TAB: insert_coin(0); break;
 	case SDLK_ESCAPE: pulsando_escape=1; break;
@@ -452,16 +453,28 @@ INPUT_STATIC_INLINE void keyDown (SDLKey key) {
     if(keyup[key]&SPECIAL) {
         specialKey(key);
     } else {
-	pulsando_menu=0;
+    pulsando_menu=0;
+
+#ifdef RETROFW
+    switch(key) {
+        case SDLK_END:
+        case SDLK_HOME:
+            pulsando_menu=1;
+            break;
+    }
+#endif // RETROFW
+
 #ifdef DINGOO
 	if (pulsando_escape) {
     		switch(key) {
+#ifndef RETROFW
 			case SDLK_RIGHT: inc_dingoo_volumen(); break;
 			case SDLK_LEFT: dec_dingoo_volumen(); break;
 			case SDLK_UP: inc_dingoo_brightness(); break;
 			case SDLK_DOWN: dec_dingoo_brightness(); break;
 			case SDLK_LCTRL: inc_dingoo_mhz(); break;
 			case SDLK_LALT: dec_dingoo_mhz(); break;
+#endif // !RETROFW
 			case SDLK_RETURN: pulsando_menu=1; break;
 		}
 	} else

@@ -31,14 +31,8 @@ B: B button
 Y: C button
 X: D button
 L: Pause
-R: Brings up the NEO4ALL menu
+POWER: Brings up the NEO4ALL menu
 SELECT + START: Brings up the NEO4ALL menu
-SELECT + UP: Brightness up.
-SELECT + DOWN: Brightness down.
-SELECT + LEFT: Volume down.
-SELECT + RIGHT: Volume up.
-SELECT + A: Increase Dingoo overclocking
-SELECT + B: Decrease Dingoo overclocking
 
 
 5. MENU OPTIONS
