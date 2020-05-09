@@ -483,12 +483,8 @@ if (argc > 0) {
 #ifdef STDOUTPUT
 	puts("MAIN!!!");
 #endif
-	// Initialise SDL
-#ifdef DINGUX
-	if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
-#else
+
 	if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_CDROM|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK)==-1)) {
-#endif
 		console_printf("Could not initialize SDL: %s.\n", SDL_GetError());
 		return -1;
     }

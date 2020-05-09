@@ -187,23 +187,18 @@ void	video_shutdown(void)
 //----------------------------------------------------------------------------
 int	video_set_mode(int mode)
 {
-#ifndef USE_VIDEO_GL
-#ifndef DINGUX
-	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_HWPALETTE|SDL_HWSURFACE|SDL_DOUBLEBUF))==NULL) {
+	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE |
+#ifdef SDL_TRIPLEBUF
+	SDL_TRIPLEBUF
 #else
-	if ((screen=SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE))==NULL) {
+	SDL_DOUBLEBUF
 #endif
-
-#else
-	if (!init_video_gl()) {
-#endif
+	))==NULL) {
 		fprintf( stderr, "Could not set video mode: %s\n", SDL_GetError() );
-
-        	SDL_Quit();
-        	exit( -1 );
+		SDL_Quit();
+		exit( -1 );
 		return 0;
 	}
-
 	return 1;
 }
 
