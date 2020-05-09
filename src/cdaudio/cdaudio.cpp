@@ -23,6 +23,9 @@ static SDL_sem *sem_atiende=NULL;
 static SDL_mutex *mtx_procesando=NULL;
 #endif
 
+#include "SDL_mixer.h"
+extern char neo4all_image_dir[];
+Mix_Music *music;
 
 //-- Private Variables -------------------------------------------------------
 static int			cdda_min_track;
@@ -60,6 +63,12 @@ int cdda_get_disk_info(void)
 #ifdef ENABLE_CDDA
     if(cdda_disabled) return 1;
 
+#ifdef USE_MP3_CDDA
+    cdda_min_track = 0;
+    cdda_max_track = cdda_num_tracks();
+    cdda_disk_length = cdda_max_track;
+    return 1;
+#else
     if( CD_INDRIVE(SDL_CDStatus(cdrom)) ) {
         cdda_min_track = 0;
         cdda_max_track = cdrom->numtracks;
@@ -73,6 +82,7 @@ int cdda_get_disk_info(void)
         return 1;
     }
 #endif
+#endif
     return 0;
 }
 
@@ -81,6 +91,7 @@ int cdda_get_disk_info(void)
 static int real_cdda_play(int track)
 #else
 int cdda_play(int track)
+	if(cdda_disabled) return;
 #endif
 {
 #ifndef SHOW_MENU
@@ -91,6 +102,34 @@ int cdda_play(int track)
 
     if(cdda_playing && cdda_current_track==track) return 1;
 
+#ifdef USE_MP3_CDDA
+    if (track > 1 && track <= cdda_num_tracks())
+    {
+
+    	char fname[256];
+    	if (cdda_get_track_name(track, fname))
+    	{
+    		if (cdda_playing && music) {
+				Mix_FreeMusic(music);
+				music=NULL;
+    		}
+
+    		char cdda_track[1024];
+			sprintf(cdda_track, "%s/%s", neo4all_image_dir, fname);
+
+			printf("CD Play: %s\n", cdda_track);
+
+			music = Mix_LoadMUS(cdda_track);
+			Mix_PlayMusic(music, -1);
+
+			cdda_current_track = track;
+			cdda_loop_counter = 0;
+			cdda_track_end = cdda_get_track_end(track);
+			cdda_playing = 1;
+			return 1;
+    	}
+    }
+#else
     if( CD_INDRIVE(SDL_CDStatus(cdrom)) ) {
     	SDL_CDPlayTracks(cdrom, track-1, 0, 1, 0);
     	cdda_current_track = track;
@@ -108,37 +147,42 @@ int cdda_play(int track)
         return 1;
     }
 #endif
+#endif
     return 0;
 }
 
 //----------------------------------------------------------------------------
 void	cdda_pause(void)
 {
-#ifdef ENABLE_CDDA
-	if(cdda_disabled) return;
+	if (music) Mix_PauseMusic();
+	if (cdda_disabled) return;
+#if defined(ENABLE_CDDA) && !defined(USE_MP3_CDDA)
 	SDL_CDPause(cdrom);
-	cdda_playing = 0;
 #endif
+	cdda_playing = 0;
 }
 
 
 void	cdda_stop(void)
 {
-#ifdef ENABLE_CDDA
-	if(cdda_disabled) return;
+	if (cdda_disabled) return;
+	if (music) Mix_HaltMusic();
+#if defined(ENABLE_CDDA) && !defined(USE_MP3_CDDA)
 	SDL_CDStop(cdrom);
-	cdda_playing = 0;
 #endif
+	cdda_playing = 0;
 }
 
 //----------------------------------------------------------------------------
 void	cdda_resume(void)
 {
-#ifdef ENABLE_CDDA
-	if(cdda_disabled || cdda_playing) return;
-	SDL_CDResume(cdrom);	
-	cdda_playing = 1;
+	if (cdda_disabled || cdda_playing) return;
+	if (music) Mix_ResumeMusic();
+
+#if defined(ENABLE_CDDA) && !defined(USE_MP3_CDDA)
+	SDL_CDResume(cdrom);
 #endif
+	cdda_playing = 1;
 }
 
 //----------------------------------------------------------------------------
@@ -237,7 +281,12 @@ int	cdda_init(void)
 	cdda_current_track = 0;
 	cdda_playing = 0;
 	cdda_loop_counter = 0;
+	if (cdda_num_tracks() == 0)
+		cdda_disabled = 1;
+	else
+		cdda_disabled = 0;
 
+#ifndef USE_MP3_CDDA
 	/* Open the default drive */
 	cdrom=SDL_CDOpen(cdda_current_drive);
 
@@ -248,6 +297,7 @@ int	cdda_init(void)
 		return 1;
 	} else {
 		cdda_disabled=0;
+#endif
 #ifdef USE_THREAD_CDDA
 		if (!sem_atiende)
 			sem_atiende=SDL_CreateSemaphore(0);
@@ -256,8 +306,10 @@ int	cdda_init(void)
 		if (!mithread_alive)
 			SDL_CreateThread(mithread,0);
 #endif
+#ifndef USE_MP3_CDDA
 		console_printf("CD Audio OK!\n");
 	}
+#endif
 
 	cdda_get_disk_info();
 #else
@@ -271,11 +323,13 @@ void	cdda_shutdown(void)
 {
 #ifdef ENABLE_CDDA
 	if(cdda_disabled) return;
+#ifndef USE_MP3_CDDA
 	if (cdrom)
 	{
 		SDL_CDStop(cdrom);
 		SDL_CDClose(cdrom);
 	}
+#endif
 	cdrom=NULL;
 	cdda_disabled=1;
 #ifdef USE_THREAD_CDDA

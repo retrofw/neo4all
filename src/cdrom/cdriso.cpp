@@ -144,6 +144,9 @@ struct trackinfo {
 	cd_type type;
 	char start[3];		// MSF-format
 	char length[3];		// MSF-format
+#ifdef USE_MP3_CDDA
+	char fname[MAXPATHLEN]; // filename
+#endif
 };
 
 typedef struct {
@@ -222,6 +225,10 @@ static cdr_file cdr_files[64];
 
 static int numtracks = 0;
 static struct trackinfo ti[MAXTRACKS];
+#ifdef USE_MP3_CDDA
+static int numaudiotracks = 0;
+static int firstaudiotrack = -1;
+#endif
 
 static char IsoFile[MAXPATHLEN] = "";
 static long long cdOpenCaseTime = 0;
@@ -483,6 +490,27 @@ static int parsetoc(const char *isofile) {
 	return 0;
 }
 
+#ifdef USE_MP3_CDDA
+int cdda_num_tracks()
+{
+	return numtracks;
+}
+
+int cdda_get_track_name(int index, char* name)
+{
+	if (index > 1 && index <= numtracks)
+	{
+		strcpy(name, ti[index].fname);
+		return 1;
+	}
+	return 0;
+}
+
+int cdda_get_track_end(int track)
+{
+	return (msf2sec(ti[track].length) * 60) / 75;
+}
+#endif
 // this function tries to get the .cue file of the given .bin
 // the necessary data is put into the ti (trackinformation)-array
 static int parsecue(const char *isofile) {
@@ -493,6 +521,9 @@ static int parsecue(const char *isofile) {
 	char			*tmp;
 	char			linebuf[256], dummy[256];
 	unsigned int	t;
+#ifdef USE_MP3_CDDA
+	bool			foundMP3  = 0;
+#endif
 
 	numtracks = 0;
 
@@ -520,13 +551,67 @@ static int parsecue(const char *isofile) {
 			continue;
 		}
 
+#ifdef USE_MP3_CDDA
+		if (!strcmp(token, "FILE"))
+		{
+			if (strstr(linebuf, "MP3") != NULL)
+			{
+				if (numtracks >= 1)
+				{
+					printf("%s - Index %d, Type %s\n", ti[numtracks].fname, numtracks, ti[numtracks].type == CDDA ? "CDDA" : "DATA");
+				}
+				numtracks++;
+				foundMP3 = 1;
+				memset(ti[numtracks].fname, 0, MAXPATHLEN);
+				sscanf(linebuf, " FILE \"%[^\"]\" MP3", ti[numtracks].fname);
+			}
+			else if (strstr(linebuf, "OGG") != NULL)
+			{
+				if (numtracks >= 1)
+				{
+					printf("%s - Index %d, Type %s\n", ti[numtracks].fname, numtracks, ti[numtracks].type == CDDA ? "CDDA" : "DATA");
+				}
+				numtracks++;
+				foundMP3 = 1;
+				memset(ti[numtracks].fname, 0, MAXPATHLEN);
+				sscanf(linebuf, " FILE \"%[^\"]\" OGG", ti[numtracks].fname);
+			}
+			else if (strstr(linebuf, "WAV") != NULL)
+			{
+				if (numtracks >= 1)
+				{
+					printf("%s - Index %d, Type %s\n", ti[numtracks].fname, numtracks, ti[numtracks].type == CDDA ? "CDDA" : "DATA");
+				}
+				numtracks++;
+				foundMP3 = 1;
+				memset(ti[numtracks].fname, 0, MAXPATHLEN);
+				sscanf(linebuf, " FILE \"%[^\"]\" WAV", ti[numtracks].fname);
+			}
+			else if (strstr(linebuf, "BINARY") != NULL)
+			{
+				numtracks++;
+				foundMP3 = 1;
+				sscanf(linebuf, " FILE \"%[^\"]\" BINARY", ti[numtracks].fname);
+			}
+			else
+				foundMP3 = 0;
+		}
+		else if (foundMP3) {
+#endif
 		if (!strcmp(token, "TRACK")){
+#ifndef USE_MP3_CDDA
 			numtracks++;
+#endif
 
 			if (strstr(linebuf, "AUDIO") != NULL) {
 				ti[numtracks].type = CDDA;
+#ifdef USE_MP3_CDDA
+				numaudiotracks++;
+				if (firstaudiotrack < 0)
+					firstaudiotrack = numtracks;
+#endif
 			}
-			else if (strstr(linebuf, "MODE1/2352") != NULL || strstr(linebuf, "MODE2/2352") != NULL) {
+			else if (strstr(linebuf, "MODE1/2352") != NULL || strstr(linebuf, "MODE2/2352") != NULL || strstr(linebuf, "MODE1/2048") != NULL) {
 				ti[numtracks].type = DATA;
 			}
 		}
@@ -549,6 +634,9 @@ static int parsecue(const char *isofile) {
 				sec2msf(t, ti[numtracks - 1].length);
 			}
 		}
+#ifdef USE_MP3_CDDA
+		}
+#endif
 	}
 
 	fclose(fi);

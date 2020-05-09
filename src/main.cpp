@@ -10,6 +10,9 @@
 #include <string.h>
 
 
+#include "SDL_mixer.h"
+extern Uint16 play_buffer[];
+
 #include "neo4all.h"
 #include "z80/z80intrf.h"
 
@@ -1025,6 +1028,20 @@ void	neogeo_run(void)
 
 	// Update keys and Joystick
 		processEvents();
+
+		if (!Mix_Playing(1)) {
+			neo4all_prof_start(NEO4ALL_PROFILER_SOUND);
+			streamupdate(1024*4);
+			neo4all_prof_end(NEO4ALL_PROFILER_SOUND);
+
+			Mix_Chunk *chunk;
+			chunk = (Mix_Chunk *)malloc(sizeof(Mix_Chunk));
+			chunk->allocated = 0;
+			chunk->alen = 1024*4;
+			chunk->abuf = (Uint8*)play_buffer;
+			chunk->volume = 80;
+			Mix_PlayChannel(1, chunk, 0);
+		}
 
 	// Frameskip
 		switch(neogeo_frameskip)

@@ -39,26 +39,25 @@ static unsigned char sound_muted=0x3;
 #define MUSIC_MOD "cd.mod"
 #endif
 
-#include <SDL_mixer.h>
-
 #ifdef MENU_MUSIC
+#include <SDL_mixer.h>
 enum{
 	SAMPLE_BEEP,
-	SAMPLE_ERROR,
-	SAMPLE_LOADING,
-	SAMPLE_SAVING,
-	SAMPLE_MENU,
-	SAMPLE_BYE,
+	// SAMPLE_ERROR,
+	// SAMPLE_LOADING,
+	// SAMPLE_SAVING,
+	// SAMPLE_MENU,
+	// SAMPLE_BYE,
 	NUM_SAMPLES
 };
 
 static char *sample_filename[NUM_SAMPLES]={
 	DATA_PREFIX "beep.wav",
-	DATA_PREFIX "error.wav",
-	DATA_PREFIX "loading.wav",
-	DATA_PREFIX "saving.wav",
-	DATA_PREFIX "menu.wav",
-	DATA_PREFIX "goodbye.wav",
+	// DATA_PREFIX "error.wav",
+	// DATA_PREFIX "loading.wav",
+	// DATA_PREFIX "saving.wav",
+	// DATA_PREFIX "menu.wav",
+	// DATA_PREFIX "goodbye.wav",
 };
 
 static Mix_Chunk *sample[NUM_SAMPLES];
@@ -67,8 +66,9 @@ static Mix_Chunk *sample[NUM_SAMPLES];
 
 #endif
 
-
-#define printf
+#ifdef DREAMCAST
+#include <SDL_dreamcast.h>
+#endif
 
 unsigned sound_emulating=0;
 
@@ -78,30 +78,44 @@ void update_sdl_stream(void *userdata, Uint8 * stream, int len)
 #ifdef Z80_EMULATED
     if ((!sound_muted)&&(neogeo_sound_enable)&&(neogeo_emulating))
     {
-		neo4all_prof_start(NEO4ALL_PROFILER_SOUND);
+	neo4all_prof_start(NEO4ALL_PROFILER_SOUND);
     	streamupdate(len);
-    	SDL_MixAudio(stream, (Uint8*)play_buffer, len, MUSIC_VOLUME);
-    	// memcpy(stream, (Uint8 *) play_buffer, len);
-		neo4all_prof_end(NEO4ALL_PROFILER_SOUND);
+#ifndef DREAMCAST
+    	memcpy(stream, (Uint8 *) play_buffer, len);
+#else
+	SDL_DC_SetSoundBuffer(play_buffer);
+#endif
+	neo4all_prof_end(NEO4ALL_PROFILER_SOUND);
     }
 #endif
 }
 
 int init_sdl_audio(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
+#ifdef MENU_MUSIC
     unsigned i;
     Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, 2, NB_SAMPLES);
-
-	SDL_PauseAudio(0);
-	Mix_VolumeMusic(96);
-
-#ifdef MENU_MUSIC
     for(i=0;i<NUM_SAMPLES;i++) {
 	    sample[i]=Mix_LoadWAV(sample_filename[i]);
     }
+#else
+    SDL_AudioSpec desired;
+
+    desired.freq = SAMPLE_RATE;
+    desired.samples = NB_SAMPLES;
+
+#ifdef WORDS_BIGENDIAN
+    desired.format = AUDIO_S16MSB;
+#else
+    desired.format = AUDIO_S16SYS;
 #endif
+    desired.channels = 2;
+    desired.callback = update_sdl_stream;
+    desired.userdata = NULL;
+    SDL_OpenAudio(&desired, NULL);
+#endif
+    SDL_PauseAudio(1);
 
     sound_reset();
 #endif
@@ -111,7 +125,6 @@ int init_sdl_audio(void)
 
 void sound_play_menu_music(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
     Mix_PlayMusic(Mix_LoadMUS(DATA_PREFIX MUSIC_MOD),-1);
     sound_mute();
@@ -120,39 +133,37 @@ void sound_play_menu_music(void)
 
 void sound_play_loading(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_LOADING);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_LOADING);
 #endif
 }
 
 void sound_play_saving(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_SAVING);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_SAVING);
 #endif
 }
 
 void sound_play_menu(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_MENU);
+	// play_sample(SAMPLE_MENU);
 #endif
 }
 
 void sound_play_bye(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_BYE);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_BYE);
 #endif
 }
 
 void sound_play_beep(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
 	play_sample(SAMPLE_BEEP);
 #endif
@@ -160,27 +171,51 @@ void sound_play_beep(void)
 
 void sound_play_error(void)
 {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef MENU_MUSIC
-	play_sample(SAMPLE_ERROR);
+	play_sample(SAMPLE_BEEP);
+	// play_sample(SAMPLE_ERROR);
 #endif
 }
 
 void sound_enable(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
-	SDL_PauseAudio(0);
+#ifdef Z80_EMULATED
+//puts("sound_enable");
+	if ((sound_muted&0x1)&&(!(sound_muted&0x2)))
+	{
+#ifdef MENU_MUSIC
+		SDL_PauseAudio(1);
+		Mix_HookMusic(&update_sdl_stream,NULL);
+#endif
+		SDL_PauseAudio(0);
+	}
 	sound_muted&=0xFE;
+#endif
 }
 
 void sound_disable(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
-	SDL_PauseAudio(1);
+#ifdef Z80_EMULATED
+//puts("sound_disable");
+	if (!(sound_muted&0x3))
+	{
+#ifdef MENU_MUSIC
+		SDL_PauseAudio(1);
+#ifdef DREAMCAST
+		SDL_DC_RestoreSoundBuffer();
+#endif
+		Mix_HookMusic(NULL,NULL);
+		SDL_PauseAudio(0);
+		Mix_VolumeMusic(MUSIC_VOLUME);
+#else
+		SDL_PauseAudio(1);
+#endif
+	}
 	sound_muted|=0x1;
+#endif
 }
 
 void sound_toggle(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
+//puts("sound_toggle");
 	if (!(sound_muted&0x2))
 	{
 		if (sound_muted&0x1)
@@ -192,8 +227,8 @@ void sound_toggle(void) {
 }
 
 void sound_shutdown(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
+//puts("sound_shutdown");
     sound_stop();
     streams_sh_stop();
     YM2610_sh_stop();
@@ -202,7 +237,6 @@ void sound_shutdown(void) {
 }
 
 void sound_emulate_stop(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
     YM2610_sh_reset();
     AY8910_reset();
@@ -210,8 +244,8 @@ void sound_emulate_stop(void) {
 }
 
 void sound_stop(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
+//puts("sound_stop");
     sound_mute();
     sound_emulate_stop();
     SDL_Delay(100);
@@ -219,7 +253,6 @@ void sound_stop(void) {
 }
 
 void sound_emulate_start(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
     YM2610_sh_start();
     YM2610_sh_reset();
@@ -227,9 +260,10 @@ void sound_emulate_start(void) {
 #endif
 }
 
+
 void sound_reset(void) {
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
 #ifdef Z80_EMULATED
+//puts("sound_reset");
     streams_sh_start();
     sound_emulate_start();
     sound_unmute();
@@ -237,11 +271,37 @@ void sound_reset(void) {
 }
 
 void sound_mute(void){
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
+#ifdef Z80_EMULATED
+//puts("sound_mute");
+	if (!(sound_muted&0x2))
+	{
+#ifdef MENU_MUSIC
+		SDL_PauseAudio(1);
+#ifdef DREAMCAST
+		SDL_DC_RestoreSoundBuffer();
+#endif
+		Mix_HookMusic(NULL,NULL);
+		SDL_PauseAudio(0);
+		Mix_VolumeMusic(MUSIC_VOLUME);
+#else
+		SDL_PauseAudio(1);
+#endif
+	}
 	sound_muted=0x3;
+#endif
 }
 
 void sound_unmute(void){
-	printf("%s:%d %s\n", __FILE__, __LINE__, __func__);
+#ifdef Z80_EMULATED
+//puts("sound_unmute");
+	if (sound_muted&0x2)
+	{
+#ifdef MENU_MUSIC
+		SDL_PauseAudio(1);
+		Mix_HookMusic(&update_sdl_stream,NULL);
+#endif
+		SDL_PauseAudio(0);
+	}
 	sound_muted=0;
+#endif
 }

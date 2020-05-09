@@ -30,6 +30,11 @@ int 	cdda_get_disk_info(void);
 void	cdda_build_drive_list(void);
 int	cdda_get_volume(void);
 void	cdda_set_volume(int volume);
+#ifdef USE_MP3_CDDA
+int cdda_num_tracks();
+int cdda_get_track_name(int index, char* name);
+int cdda_get_track_end(int track);
+#endif
 
 #else
 
