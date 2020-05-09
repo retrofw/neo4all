@@ -1,0 +1,9 @@
+etc
+*.dge
+*.elf
+*.ipk
+*.opk
+neocd.bin
+.gdb_history
+*.o
+*.d
