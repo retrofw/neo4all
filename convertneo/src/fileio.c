@@ -80,16 +80,16 @@ SDL_bool check_dir(char *dir_name)
     return SDL_TRUE;
 }
 
-/* return a char* to $HOME/.gngeo/ 
+/* return a char* to $HOME/.neo4all/
    DO NOT free it!
 */
 char *get_gngeo_dir(void) {
     static char *filename=NULL;
-    int len = strlen(getenv("HOME")) + strlen("/.gngeo/") + 1;
+    int len = strlen(getenv("HOME")) + strlen("/.neo4all/") + 1;
     int i;
     if (!filename) {
-	filename=calloc(len,sizeof(char));
-	sprintf(filename,"%s/.gngeo/",getenv("HOME"));
+    	filename=calloc(len,sizeof(char));
+    	sprintf(filename,"%s/.neo4all/",getenv("HOME"));
     }
     check_dir(filename);
     //printf("get_gngeo_dir %s\n",filename);
